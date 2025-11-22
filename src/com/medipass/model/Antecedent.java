@@ -1,1 +1,1 @@
-Package com.medipass.model;
+package com.medipass.model;
