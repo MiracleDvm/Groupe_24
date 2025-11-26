@@ -1,0 +1,34 @@
+# Java compilation output
+bin/
+build/
+dist/
+target/
+
+# IDE files
+*.iml
+*.iws
+*.ipr
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+*.~vs
+*.~tmp
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.temp
