@@ -47,7 +47,7 @@ public class AdminUI implements MenuInterface {
             System.out.println("║ 2) Gestion des patients           ║");
             System.out.println("║ 3) Statistiques du système        ║");
             System.out.println("║ 4) Sauvegarder les données        ║");
-            System.out.println("║ 5) Se déconnecter                 ║");
+            System.out.println("║ 0) Se déconnecter                 ║");
             System.out.println("╚═══════════════════════════════════╝");
             System.out.print("Votre choix: ");
             String choix = sc.nextLine().trim();
@@ -61,7 +61,7 @@ public class AdminUI implements MenuInterface {
                     afficherStatistiques();
                 case "4" ->
                     sauvegarderDonnees();
-                case "5" ->
+                case "0" ->
                     continuer = false;
                 default ->
                     System.out.println("❌ Choix invalide");
@@ -80,7 +80,8 @@ public class AdminUI implements MenuInterface {
             System.out.println("║ 3) Modifier contact utilisateur    ║");
             System.out.println("║ 4) Activer/Désactiver compte       ║");
             System.out.println("║ 5) Créer un professionnel          ║");
-            System.out.println("║ 6) Retour                          ║");
+            System.out.println("║ 6) Supprimer un utilisateur        ║");
+            System.out.println("║ 0) Retour                          ║");
             System.out.println("╚════════════════════════════════════╝");
             System.out.print("Votre choix: ");
             String choix = sc.nextLine().trim();
@@ -97,6 +98,8 @@ public class AdminUI implements MenuInterface {
                 case "5" ->
                     creerProfessionnel();
                 case "6" ->
+                    supprimerUtilisateur();
+                case "0" ->
                     continuer = false;
                 default ->
                     System.out.println("❌ Choix invalide");
@@ -156,7 +159,7 @@ public class AdminUI implements MenuInterface {
             System.out.println("║ 3) Consulter dossier patient       ║");
             System.out.println("║ 4) Modifier patient                ║");
             System.out.println("║ 5) Ajouter antécédent              ║");
-            System.out.println("║ 6) Retour                          ║");
+            System.out.println("║ 0) Retour                          ║");
             System.out.println("╚════════════════════════════════════╝");
             System.out.print("Votre choix: ");
             String choix = sc.nextLine().trim();
@@ -172,7 +175,7 @@ public class AdminUI implements MenuInterface {
                     modifierPatient();
                 case "5" ->
                     ajouterAntecedent();
-                case "6" ->
+                case "0" ->
                     continuer = false;
                 default ->
                     System.out.println("❌ Choix invalide");
@@ -274,6 +277,37 @@ public class AdminUI implements MenuInterface {
             sauvegarderDonnees();
         } else {
             System.out.println("❌ Login déjà existant");
+        }
+    }
+
+    private void supprimerUtilisateur() {
+        System.out.println("\n--- Suppression d'un utilisateur ---");
+        String login = lireChaine("Login de l'utilisateur à supprimer: ");
+        
+        // Vérification que l'utilisateur existe avant de demander le mot de passe
+        if (adminService.findUtilisateur(login) == null) {
+            System.out.println("❌ Utilisateur introuvable.");
+            return;
+        }
+
+        // Empêcher l'admin de se supprimer lui-même (sécurité basique)
+        if (login.equals(admin.getLoginID())) {
+            System.out.println("❌ Vous ne pouvez pas supprimer votre propre compte.");
+            return;
+        }
+
+        System.out.println("⚠️  ATTENTION : Cette action est irréversible !");
+        String password = lireChaine("Confirmez avec votre mot de passe administrateur: ");
+
+        if (admin.seConnecter(admin.getLoginID(), password)) {
+            if (adminService.supprimerCompte(login)) {
+                System.out.println("✓ Utilisateur supprimé avec succès.");
+                sauvegarderDonnees();
+            } else {
+                System.out.println("❌ Erreur lors de la suppression.");
+            }
+        } else {
+            System.out.println("❌ Mot de passe incorrect. Suppression annulée.");
         }
     }
 

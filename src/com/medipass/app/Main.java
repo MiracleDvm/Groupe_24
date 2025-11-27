@@ -44,7 +44,7 @@ public class Main {
 
             switch (choix) {
                 case "1" -> handleAuthentification();
-                case "2" -> {
+                case "0" -> {
                     sauvegarderDonnees();
                     System.out.println("Au revoir!");
                     running = false;
@@ -57,10 +57,10 @@ public class Main {
 
     private static void afficherMenuPrincipal() {
         System.out.println("\n╔════════════════════════════════╗");
-        System.out.println("║     MENU PRINCIPAL              ║");
+        System.out.println("║     MENU PRINCIPAL             ║");
         System.out.println("╠════════════════════════════════╣");
         System.out.println("║ 1) Se connecter                ║");
-        System.out.println("║ 2) Quitter                     ║");
+        System.out.println("║ 0) Quitter                     ║");
         System.out.println("╚════════════════════════════════╝");
         System.out.print("Votre choix: ");
     }

@@ -43,7 +43,7 @@ public class ProfessionelUI implements MenuInterface {
             System.out.println("║ 3) Voir mon planning                ║");
             System.out.println("║ 4) Clôturer une consultation        ║");
             System.out.println("║ 5) Voir antécédents patient         ║");
-            System.out.println("║ 6) Se déconnecter                   ║");
+            System.out.println("║ 0) Se déconnecter                   ║");
             System.out.println("╚═════════════════════════════════════╝");
             System.out.print("Votre choix: ");
             String choix = sc.nextLine().trim();
@@ -59,7 +59,7 @@ public class ProfessionelUI implements MenuInterface {
                     clotureConsultation();
                 case "5" ->
                     afficherAntecedentsPatient();
-                case "6" ->
+                case "0" ->
                     continuer = false;
                 default ->
                     System.out.println("❌ Choix invalide");
