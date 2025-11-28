@@ -128,12 +128,12 @@ public class AdminUI implements MenuInterface {
 
     private void activerDesactiverCompte() {
         String login = lireChaine("Login de l'utilisateur: ");
-        String action = lireChaine("Action (activer/désactiver): ").toLowerCase();
+        String action = lireChaine("Action:\n 1) Activer Compte Utilisateur\n 2) Désactiver Compte Utilisateur): ").toLowerCase();
 
         boolean success = false;
-        if ("activer".equals(action)) {
+        if ("1".equals(action)) {
             success = adminService.activerCompte(login);
-        } else if ("désactiver".equals(action)) {
+        } else if ("2".equals(action)) {
             success = adminService.desactiverCompte(login);
         }
 
