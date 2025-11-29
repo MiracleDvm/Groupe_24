@@ -5,7 +5,6 @@ package com.medipass.model;
  * Le dossier est créé automatiquement lors de la création du patient.
  */
 public class Patient extends Personne {
-    private String sexePatient;
     private String numeroSecuriteSociale;
     private String groupeSanguin;
     private final DossierMedical dossier;
@@ -13,14 +12,6 @@ public class Patient extends Personne {
     public Patient(int id, String nom, String prenom) {
         super(id, nom, prenom);
         this.dossier = new DossierMedical(this);
-    }
-
-    public String getSexePatient() {
-        return sexePatient;
-    }
-
-    public void setSexe(String sexe) {
-        this.sexePatient = sexe;
     }
 
     public String getNumeroSecuriteSociale() {

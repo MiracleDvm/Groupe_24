@@ -133,9 +133,19 @@ public class PatientService {
         sb.append("ID: ").append(patient.getId()).append("\n");
         sb.append("Nom: ").append(patient.getNom()).append("\n");
         sb.append("Prénom: ").append(patient.getPrenom()).append("\n");
+        if (patient.getSexe() == null) {
+            sb.append("Sexe: ").append("Non specifié").append("\n");
+
+        } else {
+            sb.append("Sexe: ").append(patient.getSexe()).append("\n");
+        }
+        if (patient.getAge() == -1) {
+            sb.append("Age: ").append("Non specifié").append("\n");
+        } else {
+            sb.append("Age: ").append(patient.getAge()).append("\n");
+        }
         sb.append("Numéro SS: ").append(patient.getNumeroSecuriteSociale()).append("\n");
         sb.append("Groupe sanguin: ").append(patient.getGroupeSanguin()).append("\n");
-        sb.append("Dossier: ").append(patient.getDossierMedical().getIdDossier()).append("\n");
         sb.append("Antécédents: ").append(patient.getDossierMedical().getAntecedents().size()).append("\n");
         sb.append("Consultations: ").append(patient.getDossierMedical().getConsultations().size()).append("\n");
         return sb.toString();

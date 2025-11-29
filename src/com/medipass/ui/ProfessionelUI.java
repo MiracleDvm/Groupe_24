@@ -20,7 +20,9 @@ public class ProfessionelUI implements MenuInterface {
     private final PatientService patientService;
     private final ConsultationService consultationService;
     private final DataService dataService;
-    private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
 
     public ProfessionelUI(Scanner sc, ProfessionnelSante professionnel, PatientService patientService,
             ConsultationService consultationService, DataService dataService) {
@@ -70,13 +72,13 @@ public class ProfessionelUI implements MenuInterface {
 
     // gestion des patients
 
-        private void menuGestionPatients() {
+    private void menuGestionPatients() {
         boolean continuer = true;
         while (continuer) {
             System.out.println("\n╔════════════════════════════════════╗");
             System.out.println("║  GESTION DES PATIENTS              ║");
             System.out.println("╠════════════════════════════════════╣");
-            System.out.println("║ 1) Créer un patient                ║");
+            System.out.println("║ 1) Créer un dossier medical        ║");
             System.out.println("║ 2) Lister les patients             ║");
             System.out.println("║ 3) Consulter dossier patient       ║");
             System.out.println("║ 4) Modifier patient                ║");
@@ -110,9 +112,15 @@ public class ProfessionelUI implements MenuInterface {
         int id = lireEntier("ID: ");
         String nom = lireChaine("Nom: ");
         String prenom = lireChaine("Prénom: ");
-        String sexe = lireChaine("Sexe: ");
 
         Patient patient = new Patient(id, nom, prenom);
+        // check si le sexe est "M" ou "F" et rien d'autre
+        String sexe = lireChaine("Sexe (M ou F): ");
+        while (!sexe.trim().toUpperCase().equals("F") && !sexe.trim().toUpperCase().equals("M")){
+            sexe = lireChaine("Sexe (M ou F): ");
+        }
+        patient.setSexe(sexe.toUpperCase());
+        patient.setDateNaissance(lireDate("Date de naissance 'yyyy-MM-dd': "));
         patient.setNumeroSecuriteSociale(lireChaine("Numéro de Sécurité Sociale: "));
         patient.setGroupeSanguin(lireChaine("Groupe sanguin: "));
 
@@ -174,7 +182,6 @@ public class ProfessionelUI implements MenuInterface {
         }
     }
 
-
     // consultations
 
     private void programmerConsultation() {
@@ -187,7 +194,7 @@ public class ProfessionelUI implements MenuInterface {
             return;
         }
 
-        LocalDateTime dateHeure = lireDate("Date et heure (YYYY-MM-DD HH:MM): ");
+        LocalDateTime dateHeure = lireDateHeure("Date et heure (YYYY-MM-DD HH:MM): ");
         if (dateHeure == null) {
             return;
         }
@@ -279,14 +286,25 @@ public class ProfessionelUI implements MenuInterface {
         }
     }
 
-    private LocalDateTime lireDate(String prompt) {
+    private LocalDateTime lireDateHeure(String prompt) {
         while (true) {
             try {
                 System.out.print(prompt);
                 String input = sc.nextLine().trim();
-                return LocalDateTime.parse(input, DATE_FORMATTER);
+                return LocalDateTime.parse(input, DATETIME_FORMATTER);
             } catch (Exception e) {
                 System.out.println("❌ Format de date invalide. Utilisez 'yyyy-MM-dd HH:mm'");
+            }
+        }
+    }
+    private LocalDate lireDate(String prompt) {
+        while (true) {
+            try {
+                System.out.print(prompt);
+                String input = sc.nextLine().trim();
+                return LocalDate.parse(input, DATE_FORMATTER);
+            } catch (Exception e) {
+                System.out.println("❌ Format de date invalide. Utilisez 'yyyy-MM-dd'");
             }
         }
     }
