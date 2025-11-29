@@ -1,5 +1,6 @@
 package com.medipass.ui;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -38,7 +39,7 @@ public class ProfessionelUI implements MenuInterface {
             System.out.println("║  MENU PROFESSIONNEL                 ║");
             System.out.println("║  " + professionnel.getNom() + " " + professionnel.getPrenom());
             System.out.println("╠═════════════════════════════════════╣");
-            System.out.println("║ 1) Consulter patients               ║");
+            System.out.println("║ 1) Gestion des patients             ║");
             System.out.println("║ 2) Programmer une consultation      ║");
             System.out.println("║ 3) Voir mon planning                ║");
             System.out.println("║ 4) Clôturer une consultation        ║");
@@ -50,7 +51,7 @@ public class ProfessionelUI implements MenuInterface {
 
             switch (choix) {
                 case "1" ->
-                    listerPatients();
+                    menuGestionPatients();
                 case "2" ->
                     programmerConsultation();
                 case "3" ->
@@ -67,6 +68,100 @@ public class ProfessionelUI implements MenuInterface {
         }
     }
 
+    // gestion des patients
+
+        private void menuGestionPatients() {
+        boolean continuer = true;
+        while (continuer) {
+            System.out.println("\n╔════════════════════════════════════╗");
+            System.out.println("║  GESTION DES PATIENTS              ║");
+            System.out.println("╠════════════════════════════════════╣");
+            System.out.println("║ 1) Créer un patient                ║");
+            System.out.println("║ 2) Lister les patients             ║");
+            System.out.println("║ 3) Consulter dossier patient       ║");
+            System.out.println("║ 4) Modifier patient                ║");
+            System.out.println("║ 5) Ajouter antécédent              ║");
+            System.out.println("║ 0) Retour                          ║");
+            System.out.println("╚════════════════════════════════════╝");
+            System.out.print("Votre choix: ");
+            String choix = sc.nextLine().trim();
+
+            switch (choix) {
+                case "1" ->
+                    creerPatient();
+                case "2" ->
+                    listerPatients();
+                case "3" ->
+                    consulterDossierPatient();
+                case "4" ->
+                    modifierPatient();
+                case "5" ->
+                    ajouterAntecedent();
+                case "0" ->
+                    continuer = false;
+                default ->
+                    System.out.println("❌ Choix invalide");
+            }
+        }
+    }
+
+    private void creerPatient() {
+        System.out.println("\n--- Création d'un patient ---");
+        int id = lireEntier("ID: ");
+        String nom = lireChaine("Nom: ");
+        String prenom = lireChaine("Prénom: ");
+        String sexe = lireChaine("Sexe: ");
+
+        Patient patient = new Patient(id, nom, prenom);
+        patient.setNumeroSecuriteSociale(lireChaine("Numéro de Sécurité Sociale: "));
+        patient.setGroupeSanguin(lireChaine("Groupe sanguin: "));
+
+        if (patientService.creerPatient(patient)) {
+            System.out.println("✓ Patient créé avec succès. Dossier ID: " + patient.getDossierMedical().getIdDossier());
+            sauvegarderDonnees();
+        } else {
+            System.out.println("❌ Erreur lors de la création (ID peut-être déjà utilisé)");
+        }
+    }
+
+    private void consulterDossierPatient() {
+        int id = lireEntier("ID du patient: ");
+        System.out.println(patientService.afficherInfoPatient(id));
+    }
+
+    private void modifierPatient() {
+        int id = lireEntier("ID du patient: ");
+        String nom = lireChaine("Nouveau nom (ou vide): ");
+        String prenom = lireChaine("Nouveau prénom (ou vide): ");
+        String groupe = lireChaine("Nouveau groupe sanguin (ou vide): ");
+
+        if (patientService.modifierPatient(id,
+                nom.isEmpty() ? null : nom,
+                prenom.isEmpty() ? null : prenom,
+                null,
+                groupe.isEmpty() ? null : groupe)) {
+            System.out.println("✓ Patient modifié");
+            sauvegarderDonnees();
+        } else {
+            System.out.println("❌ Patient non trouvé");
+        }
+    }
+
+    private void ajouterAntecedent() {
+        int patientId = lireEntier("ID du patient: ");
+        String type = lireChaine("Type d'antécédent (allergie, maladie, intervention, etc.): ");
+        String description = lireChaine("Description: ");
+        String gravite = lireChaine("Gravité (bénin, modéré, grave): ");
+
+        Antecedent antecedent = new Antecedent(type, description, LocalDate.now(), gravite, true);
+        if (patientService.ajouterAntecedentAuPatient(patientId, antecedent)) {
+            System.out.println("✓ Antécédent ajouté");
+            sauvegarderDonnees();
+        } else {
+            System.out.println("❌ Patient non trouvé");
+        }
+    }
+
     private void listerPatients() {
         System.out.println("\n=== LISTE DES PATIENTS ===");
         List<Patient> patients = patientService.getPatients();
@@ -78,6 +173,9 @@ public class ProfessionelUI implements MenuInterface {
             }
         }
     }
+
+
+    // consultations
 
     private void programmerConsultation() {
         System.out.println("\n--- Programmation d'une consultation ---");
