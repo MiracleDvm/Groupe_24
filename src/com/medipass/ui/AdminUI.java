@@ -44,25 +44,28 @@ public class AdminUI implements MenuInterface {
     public void afficherMenu() {
         boolean continuer = true;
         while (continuer) {
-            System.out.println("\n╔═══════════════════════════════════════╗");
-            System.out.println("║  MENU ADMINISTRATEUR                  ║");
-            System.out.println("╠═══════════════════════════════════════╣");
-            System.out.println("║ 1) Gestion des utilisateurs           ║");
-            System.out.println("║ 2) Gestion des patients               ║");
-            System.out.println("║ 3) Statistiques du système            ║");
-            System.out.println("║ 4) Sauvegarder les données            ║");
-            System.out.println("║ 0) Se déconnecter                     ║");
-            System.out.println("╚═══════════════════════════════════════╝");
+            System.out.println("\n╔═══════════════════════════════════╗");
+            System.out.println("║  MENU ADMINISTRATEUR              ║");
+            System.out.println("╠═══════════════════════════════════╣");
+            System.out.println("║ 1) Gestion des utilisateurs       ║");
+            System.out.println("║ 2) Statistiques du système        ║");
+            System.out.println("║ 3) Sauvegarder les données        ║");
+            System.out.println("║ 0) Se déconnecter                 ║");
+            System.out.println("╚═══════════════════════════════════╝");
             System.out.print("Votre choix: ");
             String choix = sc.nextLine().trim();
 
             switch (choix) {
-                case "1" -> menuGestionUtilisateurs();
-                case "2" -> menuGestionPatients();
-                case "3" -> menuStatistiques();
-                case "4" -> sauvegarderDonnees();
-                case "0" -> continuer = false;
-                default -> System.out.println("❌ Choix invalide");
+                case "1" ->
+                    menuGestionUtilisateurs();
+                case "2" ->
+                    afficherStatistiques();
+                case "3" ->
+                    sauvegarderDonnees();
+                case "0" ->
+                    continuer = false;
+                default ->
+                    System.out.println("❌ Choix invalide");
             }
         }
     }
@@ -142,135 +145,7 @@ public class AdminUI implements MenuInterface {
             System.out.println("❌ Opération échouée");
         }
     }
-
-    /* ===================== PATIENTS (ADMINISTRATIF UNIQUEMENT) ===================== */
-
-    private void menuGestionPatients() {
-        boolean continuer = true;
-        while (continuer) {
-            System.out.println("\n╔═══════════════════════════════════════╗");
-            System.out.println("║  GESTION DES PATIENTS                 ║");
-            System.out.println("║  (Données administratives uniquement) ║");
-            System.out.println("╠═══════════════════════════════════════╣");
-            System.out.println("║ 1) Créer un patient                   ║");
-            System.out.println("║ 2) Lister les patients                ║");
-            System.out.println("║ 3) Consulter infos administratives    ║");
-            System.out.println("║ 4) Modifier infos administratives     ║");
-            System.out.println("║ 0) Retour                             ║");
-            System.out.println("╚═══════════════════════════════════════╝");
-            System.out.println("⚠️  Note: Les données médicales sont accessibles");
-            System.out.println("    uniquement par les professionnels de santé");
-            System.out.print("\nVotre choix: ");
-            String choix = sc.nextLine().trim();
-
-            switch (choix) {
-                case "1" -> creerPatient();
-                case "2" -> listerPatients();
-                case "3" -> consulterInfosAdministratives();
-                case "4" -> modifierPatient();
-                case "0" -> continuer = false;
-                default -> System.out.println("❌ Choix invalide");
-            }
-        }
-    }
-
-    private void creerPatient() {
-        System.out.println("\n--- Création d'un patient ---");
-        int id = lireEntier("ID: ");
-        String nom = lireChaine("Nom: ");
-        String prenom = lireChaine("Prénom: ");
-
-        Patient patient = new Patient(id, nom, prenom);
-        patient.setNumeroSecuriteSociale(lireChaine("Numéro de Sécurité Sociale: "));
-        patient.setGroupeSanguin(lireChaine("Groupe sanguin: "));
-
-        if (patientService.creerPatient(patient)) {
-            System.out.println("✓ Patient créé avec succès. Dossier ID: "
-                    + patient.getDossierMedical().getIdDossier());
-            sauvegarderDonnees();
-        } else {
-            System.out.println("❌ Erreur lors de la création (ID peut-être déjà utilisé)");
-        }
-    }
-
-    private void listerPatients() {
-        System.out.println("\n=== LISTE DES PATIENTS ===");
-        List<Patient> patients = patientService.getPatients();
-        if (patients.isEmpty()) {
-            System.out.println("Aucun patient enregistré");
-        } else {
-            for (Patient p : patients) {
-                System.out.printf("[%d] %s %s%n", p.getId(), p.getNom(), p.getPrenom());
-            }
-        }
-    }
-
-    private void consulterInfosAdministratives() {
-        int id = lireEntier("ID du patient: ");
-        Patient patient = patientService.findPatientById(id);
-
-        if (patient == null) {
-            System.out.println("❌ Patient non trouvé");
-            return;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("\n=== INFORMATIONS ADMINISTRATIVES ===\n");
-        sb.append("ID: ").append(patient.getId()).append("\n");
-        sb.append("Nom: ").append(patient.getNom()).append("\n");
-        sb.append("Prénom: ").append(patient.getPrenom()).append("\n");
-        sb.append("Numéro SS: ").append(patient.getNumeroSecuriteSociale()).append("\n");
-        sb.append("Groupe sanguin: ").append(patient.getGroupeSanguin()).append("\n");
-        sb.append("Dossier médical ID: ").append(patient.getDossierMedical().getIdDossier()).append("\n");
-        sb.append("\n⚠️  Les données médicales (antécédents, consultations)\n");
-        sb.append("   sont accessibles uniquement par les professionnels de santé.\n");
-
-        System.out.println(sb);
-    }
-
-    private void modifierPatient() {
-        int id = lireEntier("ID du patient: ");
-        String nom = lireChaine("Nouveau nom (ou vide): ");
-        String prenom = lireChaine("Nouveau prénom (ou vide): ");
-        String groupe = lireChaine("Nouveau groupe sanguin (ou vide): ");
-
-        if (patientService.modifierPatient(
-                id,
-                nom.isEmpty() ? null : nom,
-                prenom.isEmpty() ? null : prenom,
-                null,
-                groupe.isEmpty() ? null : groupe)) {
-            System.out.println("✓ Patient modifié");
-            sauvegarderDonnees();
-        } else {
-            System.out.println("❌ Patient non trouvé");
-        }
-    }
-
-    /* ===================== STATISTIQUES & PLANNING ===================== */
-
-    private void menuStatistiques() {
-        System.out.println("\n╔═══════════════════════════════════════╗");
-        System.out.println("║  STATISTIQUES                         ║");
-        System.out.println("╠═══════════════════════════════════════╣");
-        System.out.println("║ 1) Statistiques générales             ║");
-        System.out.println("║ 2) Consultations par période          ║");
-        System.out.println("║ 3) Planning d'un professionnel        ║");
-        System.out.println("║ 0) Retour                             ║");
-        System.out.println("╚═══════════════════════════════════════╝");
-        System.out.print("Votre choix: ");
-        String choix = sc.nextLine().trim();
-
-        switch (choix) {
-            case "1" -> afficherStatistiquesGenerales();
-            case "2" -> afficherConsultationsParPeriode();
-            case "3" -> afficherPlanningProfessionnel();
-            case "0" -> { }
-            default -> System.out.println("❌ Choix invalide");
-        }
-    }
-
-    private void afficherStatistiquesGenerales() {
+    private void afficherStatistiques() {
         System.out.println(statsService.afficherStatistiques(
                 patientService.getNombrePatients(),
                 adminService.getNombreProfessionnels(),

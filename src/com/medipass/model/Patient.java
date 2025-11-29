@@ -14,11 +14,23 @@ public class Patient extends Personne {
         this.dossier = new DossierMedical(this);
     }
 
-    public String getNumeroSecuriteSociale() { return numeroSecuriteSociale; }
-    public void setNumeroSecuriteSociale(String numero) { this.numeroSecuriteSociale = numero; }
+    public String getNumeroSecuriteSociale() {
+        return numeroSecuriteSociale;
+    }
 
-    public String getGroupeSanguin() { return groupeSanguin; }
-    public void setGroupeSanguin(String g) { this.groupeSanguin = g; }
+    public void setNumeroSecuriteSociale(String numero) {
+        this.numeroSecuriteSociale = numero;
+    }
 
-    public DossierMedical getDossierMedical() { return dossier; }
+    public String getGroupeSanguin() {
+        return groupeSanguin;
+    }
+
+    public void setGroupeSanguin(String g) {
+        this.groupeSanguin = g;
+    }
+
+    public DossierMedical getDossierMedical() {
+        return dossier;
+    }
 }

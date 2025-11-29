@@ -20,8 +20,8 @@ public class ProfessionelUI implements MenuInterface {
     private final PatientService patientService;
     private final ConsultationService consultationService;
     private final DataService dataService;
-    private final DateTimeFormatter DATE_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public ProfessionelUI(Scanner sc,
                           ProfessionnelSante professionnel,
@@ -39,35 +39,138 @@ public class ProfessionelUI implements MenuInterface {
     public void afficherMenu() {
         boolean continuer = true;
         while (continuer) {
-            System.out.println("\n╔═══════════════════════════════════════╗");
-            System.out.println("║  MENU PROFESSIONNEL                   ║");
-            System.out.println("║  Dr. " + professionnel.getNom() + " " + professionnel.getPrenom());
-            System.out.println("╠═══════════════════════════════════════╣");
-            System.out.println("║ 1) Consulter patients                 ║");
-            System.out.println("║ 2) Programmer une consultation        ║");
-            System.out.println("║ 3) Voir mon planning                  ║");
-            System.out.println("║ 4) Clôturer une consultation          ║");
-            System.out.println("║ 5) Gérer antécédents patient          ║");
-            System.out.println("║ 6) Annuler une consultation           ║");
-            System.out.println("║ 0) Se déconnecter                     ║");
-            System.out.println("╚═══════════════════════════════════════╝");
+            System.out.println("\n╔═════════════════════════════════════╗");
+            System.out.println("║  MENU PROFESSIONNEL                 ║");
+            System.out.println("║  " + professionnel.getNom() + " " + professionnel.getPrenom());
+            System.out.println("╠═════════════════════════════════════╣");
+            System.out.println("║ 1) Gestion des patients             ║");
+            System.out.println("║ 2) Programmer une consultation      ║");
+            System.out.println("║ 3) Voir mon planning                ║");
+            System.out.println("║ 4) Clôturer une consultation        ║");
+            System.out.println("║ 5) Voir antécédents patient         ║");
+            System.out.println("║ 0) Se déconnecter                   ║");
+            System.out.println("╚═════════════════════════════════════╝");
             System.out.print("Votre choix: ");
             String choix = sc.nextLine().trim();
 
             switch (choix) {
-                case "1" -> listerPatients();
-                case "2" -> programmerConsultation();
-                case "3" -> menuPlanning();
-                case "4" -> clotureConsultation();
-                case "5" -> menuAntecedents();
-                case "6" -> annulerConsultation();
-                case "0" -> continuer = false;
-                default -> System.out.println("❌ Choix invalide");
+                case "1" ->
+                    menuGestionPatients();
+                case "2" ->
+                    programmerConsultation();
+                case "3" ->
+                    afficherPlanning();
+                case "4" ->
+                    clotureConsultation();
+                case "5" ->
+                    afficherAntecedentsPatient();
+                case "0" ->
+                    continuer = false;
+                default ->
+                    System.out.println("❌ Choix invalide");
             }
         }
     }
 
-    /* ===================== PATIENTS ===================== */
+    // gestion des patients
+
+    private void menuGestionPatients() {
+        boolean continuer = true;
+        while (continuer) {
+            System.out.println("\n╔════════════════════════════════════╗");
+            System.out.println("║  GESTION DES PATIENTS              ║");
+            System.out.println("╠════════════════════════════════════╣");
+            System.out.println("║ 1) Créer un dossier medical        ║");
+            System.out.println("║ 2) Lister les patients             ║");
+            System.out.println("║ 3) Consulter dossier patient       ║");
+            System.out.println("║ 4) Modifier patient                ║");
+            System.out.println("║ 5) Ajouter antécédent              ║");
+            System.out.println("║ 0) Retour                          ║");
+            System.out.println("╚════════════════════════════════════╝");
+            System.out.print("Votre choix: ");
+            String choix = sc.nextLine().trim();
+
+            switch (choix) {
+                case "1" ->
+                    creerPatient();
+                case "2" ->
+                    listerPatients();
+                case "3" ->
+                    consulterDossierPatient();
+                case "4" ->
+                    modifierPatient();
+                case "5" ->
+                    ajouterAntecedent();
+                case "0" ->
+                    continuer = false;
+                default ->
+                    System.out.println("❌ Choix invalide");
+            }
+        }
+    }
+
+    private void creerPatient() {
+        System.out.println("\n--- Création d'un patient ---");
+        int id = generatedID();
+        String nom = lireChaine("Nom: ");
+        String prenom = lireChaine("Prénom: ");
+
+        Patient patient = new Patient(id, nom, prenom);
+        // check si le sexe est "M" ou "F" et rien d'autre
+        String sexe = lireChaine("Sexe (M ou F): ");
+        while (!sexe.trim().toUpperCase().equals("F") && !sexe.trim().toUpperCase().equals("M")) {
+            sexe = lireChaine("Sexe (M ou F): ");
+        }
+        patient.setSexe(sexe.toUpperCase());
+        patient.setDateNaissance(lireDate("Date de naissance 'yyyy-MM-dd': "));
+        patient.setNumeroSecuriteSociale(lireChaine("Numéro de Sécurité Sociale: "));
+        patient.setGroupeSanguin(lireChaine("Groupe sanguin: "));
+
+        if (patientService.creerPatient(patient)) {
+            System.out.println("✓ Patient créé avec succès. Dossier ID: " + patient.getDossierMedical().getIdDossier());
+            sauvegarderDonnees();
+        } else {
+            System.out.println("❌ Erreur lors de la création (ID peut-être déjà utilisé)");
+        }
+    }
+
+    private void consulterDossierPatient() {
+        int id = lireEntier("ID du patient: ");
+        System.out.println(patientService.afficherInfoPatient(id));
+    }
+
+    private void modifierPatient() {
+        int id = lireEntier("ID du patient: ");
+        String nom = lireChaine("Nouveau nom (ou vide): ");
+        String prenom = lireChaine("Nouveau prénom (ou vide): ");
+        String groupe = lireChaine("Nouveau groupe sanguin (ou vide): ");
+
+        if (patientService.modifierPatient(id,
+                nom.isEmpty() ? null : nom,
+                prenom.isEmpty() ? null : prenom,
+                null,
+                groupe.isEmpty() ? null : groupe)) {
+            System.out.println("✓ Patient modifié");
+            sauvegarderDonnees();
+        } else {
+            System.out.println("❌ Patient non trouvé");
+        }
+    }
+
+    private void ajouterAntecedent() {
+        int patientId = lireEntier("ID du patient: ");
+        String type = lireChaine("Type d'antécédent (allergie, maladie, intervention, etc.): ");
+        String description = lireChaine("Description: ");
+        String gravite = lireChaine("Gravité (bénin, modéré, grave): ");
+
+        Antecedent antecedent = new Antecedent(type, description, LocalDate.now(), gravite, true);
+        if (patientService.ajouterAntecedentAuPatient(patientId, antecedent)) {
+            System.out.println("✓ Antécédent ajouté");
+            sauvegarderDonnees();
+        } else {
+            System.out.println("❌ Patient non trouvé");
+        }
+    }
 
     private void listerPatients() {
         System.out.println("\n=== LISTE DES PATIENTS ===");
@@ -81,7 +184,18 @@ public class ProfessionelUI implements MenuInterface {
         }
     }
 
-    /* ===================== CONSULTATIONS ===================== */
+
+    // generate un Id en auto en fonction du dernier patient de la liste
+    private int generatedID() {
+        List<Patient> patients = patientService.getPatients();
+        if (patients.isEmpty()) {
+            return 1;
+        } else {
+            return patients.get(patients.size()-1).getId()+1;
+        }
+    }
+
+    // consultations professionnel de sante
 
     private void programmerConsultation() {
         System.out.println("\n--- Programmation d'une consultation ---");
@@ -93,7 +207,7 @@ public class ProfessionelUI implements MenuInterface {
             return;
         }
 
-        LocalDateTime dateHeure = lireDateTime("Date et heure (YYYY-MM-DD HH:MM): ");
+        LocalDateTime dateHeure = lireDateHeure("Date et heure (YYYY-MM-DD HH:MM): ");
         if (dateHeure == null) {
             return;
         }
@@ -433,12 +547,12 @@ public class ProfessionelUI implements MenuInterface {
         }
     }
 
-    private LocalDateTime lireDateTime(String prompt) {
+    private LocalDateTime lireDateHeure(String prompt) {
         while (true) {
             try {
                 System.out.print(prompt);
                 String input = sc.nextLine().trim();
-                return LocalDateTime.parse(input, DATE_FORMATTER);
+                return LocalDateTime.parse(input, DATETIME_FORMATTER);
             } catch (Exception e) {
                 System.out.println("❌ Format de date invalide. Utilisez 'yyyy-MM-dd HH:mm'");
                 return null;
@@ -446,12 +560,15 @@ public class ProfessionelUI implements MenuInterface {
         }
     }
 
-    private LocalDate parseDate(String input) {
-        try {
-            return LocalDate.parse(input);
-        } catch (Exception e) {
-            System.out.println("❌ Format invalide (utilisez YYYY-MM-DD)");
-            return null;
+    private LocalDate lireDate(String prompt) {
+        while (true) {
+            try {
+                System.out.print(prompt);
+                String input = sc.nextLine().trim();
+                return LocalDate.parse(input, DATE_FORMATTER);
+            } catch (Exception e) {
+                System.out.println("❌ Format de date invalide. Utilisez 'yyyy-MM-dd'");
+            }
         }
     }
 }

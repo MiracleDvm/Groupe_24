@@ -12,7 +12,7 @@ public abstract class Personne {
     protected String nom;
     protected String prenom;
     protected LocalDate dateNaissance;
-    protected char sexe;
+    protected String sexe;
     protected String adresse;
     protected String telephone;
     protected String email;
@@ -33,12 +33,15 @@ public abstract class Personne {
         if (dateNaissance == null) return -1;
         return Period.between(dateNaissance, LocalDate.now()).getYears();
     }
+    public String getSexe(){
+        return sexe;
+    }
 
     // Setters utilitaires
     public void setNom(String n){ this.nom = n; }
     public void setPrenom(String p){ this.prenom = p; }
     public void setDateNaissance(LocalDate d){ this.dateNaissance = d; }
-    public void setSexe(char s){ this.sexe = s; }
+    public void setSexe(String s){ this.sexe = s; }
     public void setAdresse(String a){ this.adresse = a; }
     public void setTelephone(String t){ this.telephone = t; }
     public void setEmail(String e){ this.email = e; }
