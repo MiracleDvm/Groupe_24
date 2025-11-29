@@ -192,7 +192,7 @@ public class ProfessionelUI implements MenuInterface {
         }
     }
 
-    // consultations
+    // consultations professionnel de sante
 
     private void programmerConsultation() {
         System.out.println("\n--- Programmation d'une consultation ---");
