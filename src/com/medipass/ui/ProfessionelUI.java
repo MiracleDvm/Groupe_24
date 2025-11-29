@@ -23,7 +23,6 @@ public class ProfessionelUI implements MenuInterface {
     private final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-
     public ProfessionelUI(Scanner sc, ProfessionnelSante professionnel, PatientService patientService,
             ConsultationService consultationService, DataService dataService) {
         this.sc = sc;
@@ -109,14 +108,14 @@ public class ProfessionelUI implements MenuInterface {
 
     private void creerPatient() {
         System.out.println("\n--- Création d'un patient ---");
-        int id = lireEntier("ID: ");
+        int id = generatedID();
         String nom = lireChaine("Nom: ");
         String prenom = lireChaine("Prénom: ");
 
         Patient patient = new Patient(id, nom, prenom);
         // check si le sexe est "M" ou "F" et rien d'autre
         String sexe = lireChaine("Sexe (M ou F): ");
-        while (!sexe.trim().toUpperCase().equals("F") && !sexe.trim().toUpperCase().equals("M")){
+        while (!sexe.trim().toUpperCase().equals("F") && !sexe.trim().toUpperCase().equals("M")) {
             sexe = lireChaine("Sexe (M ou F): ");
         }
         patient.setSexe(sexe.toUpperCase());
@@ -179,6 +178,17 @@ public class ProfessionelUI implements MenuInterface {
             for (Patient p : patients) {
                 System.out.printf("[%d] %s %s\n", p.getId(), p.getNom(), p.getPrenom());
             }
+        }
+    }
+
+
+    // generate un Id en auto en fonction du dernier patient de la liste
+    private int generatedID() {
+        List<Patient> patients = patientService.getPatients();
+        if (patients.isEmpty()) {
+            return 1;
+        } else {
+            return patients.get(patients.size()-1).getId()+1;
         }
     }
 
@@ -297,6 +307,7 @@ public class ProfessionelUI implements MenuInterface {
             }
         }
     }
+
     private LocalDate lireDate(String prompt) {
         while (true) {
             try {
