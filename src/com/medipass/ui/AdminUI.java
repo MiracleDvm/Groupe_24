@@ -23,6 +23,7 @@ public class AdminUI implements MenuInterface {
     private final StatistiquesService statsService;
     private final DataService dataService;
     private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final CSVExportService exportService ;
 
     public AdminUI(Scanner sc, Administrateur admin, PatientService patientService,
             ConsultationService consultationService, AdministrateurService adminService,
@@ -34,6 +35,7 @@ public class AdminUI implements MenuInterface {
         this.adminService = adminService;
         this.statsService = statsService;
         this.dataService = dataService;
+        this.exportService = new CSVExportService(dataService, patientService,adminService,consultationService);
     }
 
     @Override
@@ -47,7 +49,9 @@ public class AdminUI implements MenuInterface {
             System.out.println("║ 2) Gestion des patients           ║");
             System.out.println("║ 3) Statistiques du système        ║");
             System.out.println("║ 4) Sauvegarder les données        ║");
-            System.out.println("║ 5) Se déconnecter                 ║");
+            System.out.println("║ 5) Exporter les données en CSV    ║");
+            System.out.println("║ 6) Importer des données CSV       ║");
+            System.out.println("║ 0) Se déconnecter                 ║");
             System.out.println("╚═══════════════════════════════════╝");
             System.out.print("Votre choix: ");
             String choix = sc.nextLine().trim();
@@ -62,6 +66,8 @@ public class AdminUI implements MenuInterface {
                 case "4" ->
                     sauvegarderDonnees();
                 case "5" ->
+                    exporterDonnees();
+                case "0" ->
                     continuer = false;
                 default ->
                     System.out.println("❌ Choix invalide");
@@ -80,7 +86,7 @@ public class AdminUI implements MenuInterface {
             System.out.println("║ 3) Modifier contact utilisateur    ║");
             System.out.println("║ 4) Activer/Désactiver compte       ║");
             System.out.println("║ 5) Créer un professionnel          ║");
-            System.out.println("║ 6) Retour                          ║");
+            System.out.println("║ 0) Retour                          ║");
             System.out.println("╚════════════════════════════════════╝");
             System.out.print("Votre choix: ");
             String choix = sc.nextLine().trim();
@@ -96,7 +102,7 @@ public class AdminUI implements MenuInterface {
                     activerDesactiverCompte();
                 case "5" ->
                     creerProfessionnel();
-                case "6" ->
+                case "0" ->
                     continuer = false;
                 default ->
                     System.out.println("❌ Choix invalide");
@@ -156,7 +162,7 @@ public class AdminUI implements MenuInterface {
             System.out.println("║ 3) Consulter dossier patient       ║");
             System.out.println("║ 4) Modifier patient                ║");
             System.out.println("║ 5) Ajouter antécédent              ║");
-            System.out.println("║ 6) Retour                          ║");
+            System.out.println("║ 0) Retour                          ║");
             System.out.println("╚════════════════════════════════════╝");
             System.out.print("Votre choix: ");
             String choix = sc.nextLine().trim();
@@ -172,7 +178,7 @@ public class AdminUI implements MenuInterface {
                     modifierPatient();
                 case "5" ->
                     ajouterAntecedent();
-                case "6" ->
+                case "0" ->
                     continuer = false;
                 default ->
                     System.out.println("❌ Choix invalide");
@@ -284,6 +290,10 @@ public class AdminUI implements MenuInterface {
         System.out.println("(Données sauvegardées)");
     }
 
+    // ... dans votre logique de sortie ou de sauvegarde
+    private final void exporterDonnees() {
+        exportService.exportAllData();
+    }
     // --- Méthodes utilitaires pour la saisie sécurisée ---
     private String lireChaine(String prompt) {
         System.out.print(prompt);
