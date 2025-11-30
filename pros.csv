@@ -1,3 +1,2 @@
-login;password;nom;prenom;specialite;numeroOrdre;horairesDisponibilite
-logan45;1234;Logan;Seth;Generaliste;NUM9783;9h-17h
-raven45;raven;Raven;Soren;Cardiologue;NUM7373;9h-17h
+login;password;accessLevel;nom;prenom;specialite;numeroOrdre;horairesDisponibilite
+raven45;raven;123;Soren;Khan;Cardiologue;NUM7373;9h-17h;9h-17h

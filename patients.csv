@@ -1,1 +1,2 @@
-id;nom;prenom;numeroSecuriteSociale;groupeSanguin
+id;nom;prenom;sexe;dateDeNaissance;numeroSecuriteSociale;groupeSanguin
+291125;LOGAN;Sam;null;null;01 05 1234 89;O+
