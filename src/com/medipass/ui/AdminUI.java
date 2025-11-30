@@ -75,9 +75,10 @@ public class AdminUI implements MenuInterface {
             System.out.println("║ 1) Lister les professionnels       ║");
             System.out.println("║ 2) Afficher un utilisateur         ║");
             System.out.println("║ 3) Modifier contact utilisateur    ║");
-            System.out.println("║ 4) Activer/Désactiver compte       ║");
-            System.out.println("║ 5) Créer un professionnel          ║");
-            System.out.println("║ 6) Supprimer un utilisateur        ║");
+            System.out.println("║ 4) Gérer droits d'accès            ║");
+            System.out.println("║ 5) Activer/Désactiver compte       ║");
+            System.out.println("║ 6) Créer un professionnel          ║");
+            System.out.println("║ 7) Supprimer un utilisateur        ║");
             System.out.println("║ 0) Retour                          ║");
             System.out.println("╚════════════════════════════════════╝");
             System.out.print("Votre choix: ");
@@ -91,10 +92,12 @@ public class AdminUI implements MenuInterface {
                 case "3" ->
                     modifierContactUtilisateur();
                 case "4" ->
-                    activerDesactiverCompte();
+                    gererDroitsAcces();
                 case "5" ->
-                    creerProfessionnel();
+                    activerDesactiverCompte();
                 case "6" ->
+                    creerProfessionnel();
+                case "7" ->
                     supprimerUtilisateur();
                 case "0" ->
                     continuer = false;
@@ -126,9 +129,38 @@ public class AdminUI implements MenuInterface {
         }
     }
 
+    private void gererDroitsAcces() {
+        System.out.println("\n╔══════════════════════════════════════════════════════════╗");
+        System.out.println("║           DROITS D'ACCES                                 ║");
+        System.out.println("╠══════════════════════════════════════════════════════════╣");
+        System.out.println("║ Le droit d'acces est une chaine de minimum '1' caractere ║");
+        System.out.println("║ et de maximum '5' caracteres qui specifie l'acces a un   ║");
+        System.out.println("║ ou plusieurs menus utilisateur. Si un droit d'acces est  ║");
+        System.out.println("║ '143', il donne acces aux options 1,4 et 3 du menu utili-║");
+        System.out.println("║ sateur, et ainsi de suite .                              ║");
+        System.out.println("║ NB: Ne pas entrer un droit d'acces superieur a '5'       ║");
+        System.out.println("╚══════════════════════════════════════════════════════════╝");
+        String login = lireChaine("Login de l'utilisateur: ");
+        String accessLevel = lireChaine("Entrez les droits d'acces: ");
+
+        if (accessLevel.length() > 0 && accessLevel.length() <= 5) {
+            boolean success = adminService.modifierDroitAcces(login, accessLevel);
+            if (success) {
+                System.out.println("✓ Droit d'acces modifié avec succès");
+                sauvegarderDonnees();
+            } else {
+                System.out.println("❌ Operation echouee");
+            }
+        } else {
+            System.out.println("❌ Operation echouee, veuillez entrer un droit d'acces valide.");
+
+        }
+    }
+
     private void activerDesactiverCompte() {
         String login = lireChaine("Login de l'utilisateur: ");
-        String action = lireChaine("1) Activer compte utilisateur\n0) Désactiver compte utilisateur\nAction:").toLowerCase();
+        String action = lireChaine("1) Activer compte utilisateur\n0) Désactiver compte utilisateur\nAction:")
+                .toLowerCase();
 
         boolean success = false;
         if ("1".equals(action)) {
@@ -138,20 +170,20 @@ public class AdminUI implements MenuInterface {
         }
 
         if (success) {
-            System.out.println("✓ Compte " + (action.equals("0")? "désactivé":"activé") + " avec succès");
+            System.out.println("✓ Compte " + (action.equals("0") ? "désactivé" : "activé") + " avec succès");
             sauvegarderDonnees();
         } else {
             System.out.println("❌ Opération échouée");
         }
     }
+
     private void afficherStatistiques() {
         System.out.println(statsService.afficherStatistiques(
                 patientService.getNombrePatients(),
                 adminService.getNombreProfessionnels(),
                 consultationService.getNombreConsultations(),
                 consultationService.getConsultations(),
-                adminService.getProfessionnels()
-        ));
+                adminService.getProfessionnels()));
     }
 
     private void creerProfessionnel() {
@@ -161,9 +193,20 @@ public class AdminUI implements MenuInterface {
         String nom = lireChaine("Nom: ");
         String prenom = lireChaine("Prénom: ");
         String specialite = lireChaine("Spécialité: ");
+        System.out.println("\n╔══════════════════════════════════════════════════════════╗");
+        System.out.println("║           DROITS D'ACCES                                 ║");
+        System.out.println("╠══════════════════════════════════════════════════════════╣");
+        System.out.println("║ Le droit d'acces est une chaine de minimum '1' caractere ║");
+        System.out.println("║ et de maximum '5' caracteres qui specifie l'acces a un   ║");
+        System.out.println("║ ou plusieurs menus utilisateur. Si un droit d'acces est  ║");
+        System.out.println("║ '143', il donne acces aux options 1,4 et 3 du menu utili-║");
+        System.out.println("║ sateur, et ainsi de suite .                              ║");
+        System.out.println("║ NB: Ne pas entrer un droit d'acces superieur a '5'       ║");
+        System.out.println("╚══════════════════════════════════════════════════════════╝");
+        String accessLevels = lireChaine("Droits d'acces: ");
 
         com.medipass.user.ProfessionnelSante pro = new com.medipass.user.ProfessionnelSante(
-                login, mdp, "PRO", nom, prenom, specialite, "NUM" + System.currentTimeMillis() % 10000);
+                login, mdp, "PRO", accessLevels, nom, prenom, specialite, "NUM" + System.currentTimeMillis() % 10000);
 
         if (adminService.creerCompte(pro)) {
             System.out.println("✓ Professionnel créé. Vous pouvez maintenant vous connecter.");
@@ -176,7 +219,7 @@ public class AdminUI implements MenuInterface {
     private void supprimerUtilisateur() {
         System.out.println("\n--- Suppression d'un utilisateur ---");
         String login = lireChaine("Login de l'utilisateur à supprimer: ");
-        
+
         // Vérification que l'utilisateur existe avant de demander le mot de passe
         if (adminService.findUtilisateur(login) == null) {
             System.out.println("❌ Utilisateur introuvable.");

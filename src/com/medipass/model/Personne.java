@@ -33,6 +33,9 @@ public abstract class Personne {
         if (dateNaissance == null) return -1;
         return Period.between(dateNaissance, LocalDate.now()).getYears();
     }
+    public LocalDate getDateDeNaissance(){
+        return dateNaissance;
+    }
     public String getSexe(){
         return sexe;
     }

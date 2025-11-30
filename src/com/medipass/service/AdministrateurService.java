@@ -147,6 +147,18 @@ public class AdministrateurService {
         return true;
     }
 
+        /**
+     * Modifie les droits d'acces d'un utilisateur
+     */
+    public boolean modifierDroitAcces(String loginID, String accessLevels) {
+        ProfessionnelSante professionnelSante = findProfessionnel(loginID);
+        if (professionnelSante == null) {
+            return false;
+        }
+        professionnelSante.setAccessLevels(accessLevels);
+        return true;
+    }
+
     /**
      * Obtient le nombre total de professionnels
      */
@@ -159,6 +171,7 @@ public class AdministrateurService {
      */
     public String afficherUtilisateur(String loginID) {
         Utilisateur utilisateur = findUtilisateur(loginID);
+        ProfessionnelSante professionnelSante = findProfessionnel(loginID);
         if (utilisateur == null) {
             return "Utilisateur non trouvé";
         }
@@ -171,6 +184,7 @@ public class AdministrateurService {
         sb.append("Email: ").append(utilisateur.getEmail()).append("\n");
         sb.append("Téléphone: ").append(utilisateur.getTelephone()).append("\n");
         sb.append("Rôle: ").append(utilisateur.getRole()).append("\n");
+        sb.append("Droits d'accès:").append(professionnelSante.getAccessLevels()).append("\n");
         sb.append("Statut: ").append(utilisateur.isActif() ? "Actif" : "Inactif").append("\n");
         
         if (utilisateur instanceof ProfessionnelSante) {

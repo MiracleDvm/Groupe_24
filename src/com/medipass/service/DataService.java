@@ -18,15 +18,16 @@ public class DataService {
     public void savePatients(List<Patient> patients) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(PATIENTS_FILE))) {
             // Écrire l'en-tête
-            writer.println("id;nom;prenom;numeroSecuriteSociale;groupeSanguin");
+            writer.println("id;nom;prenom;sexe;dateDeNaissance;numeroSecuriteSociale;groupeSanguin");
             for (Patient p : patients) {
-                writer.printf("%d;%s;%s;%s;%s\n",
+                writer.printf("%d;%s;%s;%s;%s;%s;%s\n",
                         p.getId(),
                         p.getNom(),
                         p.getPrenom(),
+                        p.getSexe(),
+                        p.getDateDeNaissance(),
                         p.getNumeroSecuriteSociale() != null ? p.getNumeroSecuriteSociale() : "",
-                        p.getGroupeSanguin() != null ? p.getGroupeSanguin() : ""
-                );
+                        p.getGroupeSanguin() != null ? p.getGroupeSanguin() : "");
             }
         } catch (IOException e) {
             System.err.println("Erreur sauvegarde patients: " + e.getMessage());
@@ -75,17 +76,17 @@ public class DataService {
     public void saveProfessionnels(List<ProfessionnelSante> pros) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(PROS_FILE))) {
             // Écrire l'en-tête
-            writer.println("login;password;nom;prenom;specialite;numeroOrdre;horairesDisponibilite");
+            writer.println("login;password;accessLevel;nom;prenom;specialite;numeroOrdre;horairesDisponibilite");
             for (ProfessionnelSante p : pros) {
-                writer.printf("%s;%s;%s;%s;%s;%s;%s\n",
+                writer.printf("%s;%s;%s;%s;%s;%s;%s;%s\n",
                         p.getLoginID(),
-                        p.getPassword(), // Note: In real app, should be hashed
+                        p.getPassword(),
+                        p.getAccessLevels(),
                         p.getNom(),
                         p.getPrenom(),
                         p.getSpecialite(),
                         p.getNumeroOrdre(),
-                        p.getHorairesDisponibilite()
-                );
+                        p.getHorairesDisponibilite());
             }
         } catch (IOException e) {
             System.err.println("Erreur sauvegarde professionnels: " + e.getMessage());
@@ -112,8 +113,7 @@ public class DataService {
                 if (parts.length >= 6) {
                     try {
                         ProfessionnelSante p = new ProfessionnelSante(
-                                parts[0], parts[1], "PRO", parts[2], parts[3], parts[4], parts[5]
-                        );
+                                parts[0], parts[1], "PRO", parts[2], parts[3], parts[4], parts[5], parts[6]);
                         if (parts.length > 6 && !parts[6].isEmpty()) {
                             p.setHorairesDisponibilite(parts[6]);
                         }
@@ -142,8 +142,7 @@ public class DataService {
                         c.getDureeMinutes(),
                         c.getStatut(),
                         c.getObservations() != null ? c.getObservations().replace(";", ",") : "",
-                        c.getDiagnostic() != null ? c.getDiagnostic().replace(";", ",") : ""
-                );
+                        c.getDiagnostic() != null ? c.getDiagnostic().replace(";", ",") : "");
             }
         } catch (IOException e) {
             System.err.println("Erreur sauvegarde consultations: " + e.getMessage());
