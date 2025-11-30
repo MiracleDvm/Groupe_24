@@ -43,19 +43,37 @@ public class ProfessionnelSante extends Utilisateur {
         return true;
     }
 
-    public void ajouterConsultation(Consultation c) {
+    /**
+     * Ajoute une consultation au planning
+     */
+    public void ajouterConsultation(Consultation c){
         planning.add(c);
     }
 
-    public boolean annulerConsultation(int idConsultation) {
-        return planning.removeIf(c -> c.getIdConsultation() == idConsultation);
+    /**
+     * Annule une consultation (marque comme annulée au lieu de supprimer)
+     */
+    public boolean annulerConsultation(int idConsultation){
+        for (Consultation c : planning) {
+            if (c.getIdConsultation() == idConsultation) {
+                c.setStatut("annulée");
+                return true;
+            }
+        }
+        return false;
     }
 
-    public List<Consultation> getPlanning() {
-        return planning;
+    /**
+     * Récupère le planning complet
+     */
+    public List<Consultation> getPlanning(){ 
+        return planning; 
     }
 
-    public int getNombreConsultations() {
+    /**
+     * Récupère le nombre de consultations
+     */
+    public int getNombreConsultations(){
         return planning.size();
     }
 
@@ -77,8 +95,10 @@ public class ProfessionnelSante extends Utilisateur {
         return effectuees;
     }
 
-    // Vérification de disponibilité avec gestion des chevauchements
-    public boolean estDisponiblePour(Consultation nouvelleConsultation) {
+    /**
+     * Vérification de disponibilité avec gestion des chevauchements
+     */
+    public boolean estDisponiblePour(Consultation nouvelleConsultation){
         LocalDateTime debut1 = nouvelleConsultation.getDateHeure();
         LocalDateTime fin1 = nouvelleConsultation.getFinConsultation();
 

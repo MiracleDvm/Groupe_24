@@ -1,10 +1,10 @@
 package com.medipass.ui;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import com.medipass.model.*;
 import com.medipass.service.*;
@@ -12,6 +12,7 @@ import com.medipass.user.Administrateur;
 
 /**
  * Interface utilisateur pour les administrateurs
+ * L'administrateur ne peut PAS accéder aux données médicales (antécédents, diagnostics)
  */
 public class AdminUI implements MenuInterface {
 
@@ -22,11 +23,14 @@ public class AdminUI implements MenuInterface {
     private final AdministrateurService adminService;
     private final StatistiquesService statsService;
     private final DataService dataService;
-    private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    public AdminUI(Scanner sc, Administrateur admin, PatientService patientService,
-            ConsultationService consultationService, AdministrateurService adminService,
-            StatistiquesService statsService, DataService dataService) {
+    public AdminUI(Scanner sc,
+                   Administrateur admin,
+                   PatientService patientService,
+                   ConsultationService consultationService,
+                   AdministrateurService adminService,
+                   StatistiquesService statsService,
+                   DataService dataService) {
         this.sc = sc;
         this.admin = admin;
         this.patientService = patientService;
@@ -65,6 +69,8 @@ public class AdminUI implements MenuInterface {
             }
         }
     }
+
+    /* ===================== UTILISATEURS ===================== */
 
     private void menuGestionUtilisateurs() {
         boolean continuer = true;
@@ -117,9 +123,11 @@ public class AdminUI implements MenuInterface {
         String email = lireChaine("Nouvel email (ou vide pour ne pas changer): ");
         String telephone = lireChaine("Nouveau téléphone (ou vide pour ne pas changer): ");
 
-        boolean success = adminService.modifierContactUtilisateur(login,
+        boolean success = adminService.modifierContactUtilisateur(
+                login,
                 email.isEmpty() ? null : email,
-                telephone.isEmpty() ? null : telephone);
+                telephone.isEmpty() ? null : telephone
+        );
 
         if (success) {
             System.out.println("✓ Contact modifié avec succès");
@@ -171,6 +179,7 @@ public class AdminUI implements MenuInterface {
 
         if (success) {
             System.out.println("✓ Compte " + (action.equals("0") ? "désactivé" : "activé") + " avec succès");
+            System.out.println("✓ Compte " + (action.equals("0") ? "désactivé" : "activé") + " avec succès");
             sauvegarderDonnees();
         } else {
             System.out.println("❌ Opération échouée");
@@ -183,8 +192,65 @@ public class AdminUI implements MenuInterface {
                 adminService.getNombreProfessionnels(),
                 consultationService.getNombreConsultations(),
                 consultationService.getConsultations(),
-                adminService.getProfessionnels()));
+                adminService.getProfessionnels()
+        ));
     }
+
+    private void afficherConsultationsParPeriode() {
+        System.out.print("Date de début (YYYY-MM-DD): ");
+        LocalDate debut = parseDate(sc.nextLine().trim());
+        System.out.print("Date de fin (YYYY-MM-DD): ");
+        LocalDate fin = parseDate(sc.nextLine().trim());
+
+        if (debut == null || fin == null) {
+            System.out.println("❌ Dates invalides");
+            return;
+        }
+
+        List<Consultation> consultationsPeriode = consultationService.getConsultationsParPeriode(
+                debut.atStartOfDay(), fin.atTime(23, 59));
+
+        System.out.println("\n=== CONSULTATIONS DU " + debut + " AU " + fin + " ===");
+        System.out.println("Nombre total : " + consultationsPeriode.size());
+
+        Map<String, Long> parStatut = consultationsPeriode.stream()
+                .collect(Collectors.groupingBy(Consultation::getStatut, Collectors.counting()));
+
+        System.out.println("\nPar statut :");
+        parStatut.forEach((statut, count) ->
+                System.out.println("  - " + statut + " : " + count));
+
+        Map<String, Long> parPro = consultationsPeriode.stream()
+                .collect(Collectors.groupingBy(
+                        c -> c.getProfessionnel().getNom() + " " + c.getProfessionnel().getPrenom(),
+                        Collectors.counting()));
+
+        System.out.println("\nPar professionnel :");
+        parPro.forEach((pro, count) ->
+                System.out.println("  - " + pro + " : " + count));
+    }
+
+    private void afficherPlanningProfessionnel() {
+        String login = lireChaine("Login du professionnel: ");
+        com.medipass.user.ProfessionnelSante pro = adminService.findProfessionnel(login);
+
+        if (pro == null) {
+            System.out.println("❌ Professionnel non trouvé");
+            return;
+        }
+
+        System.out.print("Date de début (YYYY-MM-DD) [Entrée pour cette semaine]: ");
+        String input = sc.nextLine().trim();
+        LocalDate debut = input.isEmpty()
+                ? LocalDate.now().with(java.time.DayOfWeek.MONDAY)
+                : parseDate(input);
+
+        if (debut != null) {
+            System.out.println(consultationService.afficherPlanningSemaine(pro, debut));
+        }
+    }
+
+    /* ===================== COMPTES & SAUVEGARDE ===================== */
 
     private void creerProfessionnel() {
         System.out.println("\n--- Création d'un professionnel de santé ---");
@@ -226,7 +292,6 @@ public class AdminUI implements MenuInterface {
             return;
         }
 
-        // Empêcher l'admin de se supprimer lui-même (sécurité basique)
         if (login.equals(admin.getLoginID())) {
             System.out.println("❌ Vous ne pouvez pas supprimer votre propre compte.");
             return;
@@ -251,10 +316,12 @@ public class AdminUI implements MenuInterface {
         dataService.savePatients(patientService.getPatients());
         dataService.saveProfessionnels(adminService.getProfessionnels());
         dataService.saveConsultations(consultationService.getConsultations());
+        dataService.saveAntecedents(patientService.getPatients());
         System.out.println("(Données sauvegardées)");
     }
 
-    // --- Méthodes utilitaires pour la saisie sécurisée ---
+    /* ===================== UTILITAIRES ===================== */
+
     private String lireChaine(String prompt) {
         System.out.print(prompt);
         return sc.nextLine().trim();
@@ -269,6 +336,15 @@ public class AdminUI implements MenuInterface {
             } catch (NumberFormatException e) {
                 System.out.println("❌ Veuillez entrer un nombre entier valide.");
             }
+        }
+    }
+
+    private LocalDate parseDate(String input) {
+        try {
+            return LocalDate.parse(input);
+        } catch (Exception e) {
+            System.out.println("❌ Format invalide (utilisez YYYY-MM-DD)");
+            return null;
         }
     }
 }
