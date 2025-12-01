@@ -84,7 +84,7 @@ public class ProfessionelUI implements MenuInterface {
             System.out.println("║ 2) Lister les patients             ║");
             System.out.println("║ 3) Consulter dossier patient       ║");
             System.out.println("║ 4) Modifier patient                ║");
-            System.out.println("║ 5) Ajouter antécédent              ║");
+            System.out.println("║ 5) Annuler consultation            ║");
             System.out.println("║ 0) Retour                          ║");
             System.out.println("╚════════════════════════════════════╝");
             System.out.print("Votre choix: ");
@@ -100,7 +100,7 @@ public class ProfessionelUI implements MenuInterface {
                 case "4" ->
                     modifierPatient(professionnel.getAccessLevels());
                 case "5" ->
-                    ajouterAntecedent(professionnel.getAccessLevels());
+                    annulerConsultation(professionnel.getAccessLevels());
                 case "0" ->
                     continuer = false;
                 default ->
@@ -176,25 +176,20 @@ public class ProfessionelUI implements MenuInterface {
         }
     }
 
-    private void ajouterAntecedent(String accessLevels) {
-        char accessLevel = '5';
-        if (accessLevels.indexOf(accessLevel) != -1) {
-            int patientId = lireEntier("ID du patient: ");
-            String type = lireChaine("Type d'antécédent (allergie, maladie, intervention, etc.): ");
-            String description = lireChaine("Description: ");
-            String gravite = lireChaine("Gravité (bénin, modéré, grave): ");
+    // private void ajouterAntecedent() {
+    //     int patientId = lireEntier("ID du patient: ");
+    //     String type = lireChaine("Type d'antécédent (allergie, maladie, intervention, etc.): ");
+    //     String description = lireChaine("Description: ");
+    //     String gravite = lireChaine("Gravité (bénin, modéré, grave): ");
 
-            Antecedent antecedent = new Antecedent(type, description, LocalDate.now(), gravite, true);
-            if (patientService.ajouterAntecedentAuPatient(patientId, antecedent)) {
-                System.out.println("✓ Antécédent ajouté");
-                sauvegarderDonnees();
-            } else {
-                System.out.println("❌ Patient non trouvé");
-            }
-        } else {
-            System.out.println("❌ Accès refusé\nVous n'êtes pas habilité(e) à accéder a cette option. ");
-        }
-    }
+    //     Antecedent antecedent = new Antecedent(type, description, LocalDate.now(), gravite, true);
+    //     if (patientService.ajouterAntecedentAuPatient(patientId, antecedent)) {
+    //         System.out.println("✓ Antécédent ajouté");
+    //         sauvegarderDonnees();
+    //     } else {
+    //         System.out.println("❌ Patient non trouvé");
+    //     }
+    // }
 
     private void listerPatients(String accessLevels) {
         char accessLevel = '2';
@@ -277,25 +272,30 @@ public class ProfessionelUI implements MenuInterface {
         }
     }
 
-    private void annulerConsultation() {
-        int id = lireEntier("ID de la consultation à annuler: ");
+    private void annulerConsultation(String accessLevels) {
+        char accessLevel = '2';
+        if (accessLevels.indexOf(accessLevel) != -1) {
+            int id = lireEntier("ID de la consultation à annuler: ");
 
-        Consultation consultation = consultationService.findConsultationById(id);
-        if (consultation == null) {
-            System.out.println("❌ Consultation non trouvée");
-            return;
-        }
+            Consultation consultation = consultationService.findConsultationById(id);
+            if (consultation == null) {
+                System.out.println("❌ Consultation non trouvée");
+                return;
+            }
 
-        if (!consultation.getProfessionnel().getLoginID().equals(professionnel.getLoginID())) {
-            System.out.println("❌ Cette consultation ne vous appartient pas");
-            return;
-        }
+            if (!consultation.getProfessionnel().getLoginID().equals(professionnel.getLoginID())) {
+                System.out.println("❌ Cette consultation ne vous appartient pas");
+                return;
+            }
 
-        if (consultationService.annulerConsultation(id)) {
-            System.out.println("✓ Consultation annulée");
-            sauvegarderDonnees();
+            if (consultationService.annulerConsultation(id)) {
+                System.out.println("✓ Consultation annulée");
+                sauvegarderDonnees();
+            } else {
+                System.out.println("❌ Erreur lors de l'annulation");
+            }
         } else {
-            System.out.println("❌ Erreur lors de l'annulation");
+            System.out.println("❌ Accès refusé\nVous n'êtes pas habilité(e) à accéder a cette option. ");
         }
     }
 
