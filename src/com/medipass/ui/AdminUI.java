@@ -12,7 +12,8 @@ import com.medipass.user.Administrateur;
 
 /**
  * Interface utilisateur pour les administrateurs
- * L'administrateur ne peut PAS accéder aux données médicales (antécédents, diagnostics)
+ * L'administrateur ne peut PAS accéder aux données médicales (antécédents,
+ * diagnostics)
  */
 public class AdminUI implements MenuInterface {
 
@@ -25,12 +26,12 @@ public class AdminUI implements MenuInterface {
     private final DataService dataService;
 
     public AdminUI(Scanner sc,
-                   Administrateur admin,
-                   PatientService patientService,
-                   ConsultationService consultationService,
-                   AdministrateurService adminService,
-                   StatistiquesService statsService,
-                   DataService dataService) {
+            Administrateur admin,
+            PatientService patientService,
+            ConsultationService consultationService,
+            AdministrateurService adminService,
+            StatistiquesService statsService,
+            DataService dataService) {
         this.sc = sc;
         this.admin = admin;
         this.patientService = patientService;
@@ -126,8 +127,7 @@ public class AdminUI implements MenuInterface {
         boolean success = adminService.modifierContactUtilisateur(
                 login,
                 email.isEmpty() ? null : email,
-                telephone.isEmpty() ? null : telephone
-        );
+                telephone.isEmpty() ? null : telephone);
 
         if (success) {
             System.out.println("✓ Contact modifié avec succès");
@@ -145,7 +145,15 @@ public class AdminUI implements MenuInterface {
         System.out.println("║ et de maximum '5' caracteres qui specifie l'acces a un   ║");
         System.out.println("║ ou plusieurs menus utilisateur. Si un droit d'acces est  ║");
         System.out.println("║ '143', il donne acces aux options 1,4 et 3 du menu utili-║");
+        System.out.println("║                                                          ║");
         System.out.println("║ sateur, et ainsi de suite .                              ║");
+        System.out.println("║ Options disponibles:                                     ║");
+        System.out.println("║ 1) Gestion des patients                                  ║");
+        System.out.println("║ 2) Programmer une consultation                           ║");
+        System.out.println("║ 3) Voir mon planning                                     ║");
+        System.out.println("║ 4) Clôturer une consultation                             ║");
+        System.out.println("║ 5) Gestion des antécédents                               ║");
+        System.out.println("║                                                          ║");
         System.out.println("║ NB: Ne pas entrer un droit d'acces superieur a '5'       ║");
         System.out.println("╚══════════════════════════════════════════════════════════╝");
         String login = lireChaine("Login de l'utilisateur: ");
@@ -192,8 +200,7 @@ public class AdminUI implements MenuInterface {
                 adminService.getNombreProfessionnels(),
                 consultationService.getNombreConsultations(),
                 consultationService.getConsultations(),
-                adminService.getProfessionnels()
-        ));
+                adminService.getProfessionnels()));
     }
 
     private void afficherConsultationsParPeriode() {
@@ -217,8 +224,7 @@ public class AdminUI implements MenuInterface {
                 .collect(Collectors.groupingBy(Consultation::getStatut, Collectors.counting()));
 
         System.out.println("\nPar statut :");
-        parStatut.forEach((statut, count) ->
-                System.out.println("  - " + statut + " : " + count));
+        parStatut.forEach((statut, count) -> System.out.println("  - " + statut + " : " + count));
 
         Map<String, Long> parPro = consultationsPeriode.stream()
                 .collect(Collectors.groupingBy(
@@ -226,8 +232,7 @@ public class AdminUI implements MenuInterface {
                         Collectors.counting()));
 
         System.out.println("\nPar professionnel :");
-        parPro.forEach((pro, count) ->
-                System.out.println("  - " + pro + " : " + count));
+        parPro.forEach((pro, count) -> System.out.println("  - " + pro + " : " + count));
     }
 
     private void afficherPlanningProfessionnel() {
@@ -266,7 +271,15 @@ public class AdminUI implements MenuInterface {
         System.out.println("║ et de maximum '5' caracteres qui specifie l'acces a un   ║");
         System.out.println("║ ou plusieurs menus utilisateur. Si un droit d'acces est  ║");
         System.out.println("║ '143', il donne acces aux options 1,4 et 3 du menu utili-║");
+        System.out.println("║                                                          ║");
         System.out.println("║ sateur, et ainsi de suite .                              ║");
+        System.out.println("║ Options disponibles:                                     ║");
+        System.out.println("║ 1) Gestion des patients                                  ║");
+        System.out.println("║ 2) Programmer une consultation                           ║");
+        System.out.println("║ 3) Voir mon planning                                     ║");
+        System.out.println("║ 4) Clôturer une consultation                             ║");
+        System.out.println("║ 5) Gestion des antécédents                               ║");
+        System.out.println("║                                                          ║");
         System.out.println("║ NB: Ne pas entrer un droit d'acces superieur a '5'       ║");
         System.out.println("╚══════════════════════════════════════════════════════════╝");
         String accessLevels = lireChaine("Droits d'acces: ");
