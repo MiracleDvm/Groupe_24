@@ -23,7 +23,8 @@ public class AdminUI implements MenuInterface {
     private final StatistiquesService statsService;
     private final DataService dataService;
     private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    private final CSVExportService exportService ;
+    private final CSVExportService exportService;
+    private final CSVImportService importService;
 
     public AdminUI(Scanner sc, Administrateur admin, PatientService patientService,
             ConsultationService consultationService, AdministrateurService adminService,
@@ -35,7 +36,9 @@ public class AdminUI implements MenuInterface {
         this.adminService = adminService;
         this.statsService = statsService;
         this.dataService = dataService;
-        this.exportService = new CSVExportService(dataService, patientService,adminService,consultationService);
+        this.exportService = new CSVExportService(dataService, patientService, adminService, consultationService);    
+        this.importService = new CSVImportService(dataService);
+
     }
 
     @Override
@@ -67,6 +70,8 @@ public class AdminUI implements MenuInterface {
                     sauvegarderDonnees();
                 case "5" ->
                     exporterDonnees();
+                case "6" ->
+                    importerDonnees();
                 case "0" ->
                     continuer = false;
                 default ->
@@ -93,7 +98,7 @@ public class AdminUI implements MenuInterface {
 
             switch (choix) {
                 case "1" ->
-                    System.out.println(adminService.afficherProfessionnels());
+                    importService.;
                 case "2" ->
                     afficherUtilisateur();
                 case "3" ->
@@ -134,7 +139,8 @@ public class AdminUI implements MenuInterface {
 
     private void activerDesactiverCompte() {
         String login = lireChaine("Login de l'utilisateur: ");
-        String action = lireChaine("1) Activer compte utilisateur\n0) Désactiver compte utilisateur\nAction :").toLowerCase();
+        String action = lireChaine("1) Activer compte utilisateur\n0) Désactiver compte utilisateur\nAction :")
+                .toLowerCase();
 
         boolean success = false;
         if ("1".equals(action)) {
@@ -144,7 +150,7 @@ public class AdminUI implements MenuInterface {
         }
 
         if (success) {
-            System.out.println("✓ Compte " + (action.equals("0")?"désactivé":"activé") + " avec succès");
+            System.out.println("✓ Compte " + (action.equals("0") ? "désactivé" : "activé") + " avec succès");
             sauvegarderDonnees();
         } else {
             System.out.println("❌ Opération échouée");
@@ -260,8 +266,7 @@ public class AdminUI implements MenuInterface {
                 adminService.getNombreProfessionnels(),
                 consultationService.getNombreConsultations(),
                 consultationService.getConsultations(),
-                adminService.getProfessionnels()
-        ));
+                adminService.getProfessionnels()));
     }
 
     private void creerProfessionnel() {
@@ -294,6 +299,39 @@ public class AdminUI implements MenuInterface {
     private final void exporterDonnees() {
         exportService.exportAllData();
     }
+
+    private final void importerDonnees() {
+        boolean continuer = true;
+        while (continuer) {
+            System.out.println("\n╔════════════════════════════════════╗");
+            System.out.println("║    IMPORTATION DE FICHIERS CSV     ║");
+            System.out.println("╠════════════════════════════════════╣");
+            System.out.println("║ 1) Importer Patients               ║");
+            System.out.println("║ 2) Importer Professionnels         ║");
+            System.out.println("║ 3) Importer Consultations          ║");
+            System.out.println("║ 4) Importer Antecedents            ║");
+            System.out.println("║ 0) Retour                          ║");
+            System.out.println("╚════════════════════════════════════╝");
+            System.out.print("Votre choix: ");
+            String choix = sc.nextLine().trim();
+
+            switch (choix) {
+                case "1" ->
+                exportService.
+                case "2" ->
+                    afficherUtilisateur();
+                case "3" ->
+                    modifierContactUtilisateur();
+                case "4" ->
+                    activerDesactiverCompte();
+                case "0" ->
+                    continuer = false;
+                default ->
+                    System.out.println("❌ Choix invalide");
+            }
+        }
+    }
+
     // --- Méthodes utilitaires pour la saisie sécurisée ---
     private String lireChaine(String prompt) {
         System.out.print(prompt);
