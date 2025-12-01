@@ -59,7 +59,7 @@ public class ProfessionelUI implements MenuInterface {
                 case "2" ->
                     programmerConsultation();
                 case "3" ->
-                    afficherPlanning();
+                    menuPlanning();
                 case "4" ->
                     clotureConsultation();
                 case "5" ->
@@ -597,6 +597,15 @@ public class ProfessionelUI implements MenuInterface {
             } catch (Exception e) {
                 System.out.println("❌ Format de date invalide. Utilisez 'yyyy-MM-dd'");
             }
+        }
+    }
+
+    private LocalDate parseDate(String input) {
+        try {
+            return LocalDate.parse(input, DATE_FORMATTER);
+        } catch (Exception e) {
+            System.out.println("❌ Format de date invalide. Utilisez 'yyyy-MM-dd'");
+            return null;
         }
     }
 }
