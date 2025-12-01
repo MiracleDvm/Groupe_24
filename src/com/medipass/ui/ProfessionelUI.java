@@ -604,4 +604,14 @@ public class ProfessionelUI implements MenuInterface {
             }
         }
     }
+
+    private LocalDate parseDate(String input) {
+        try {
+            return LocalDate.parse(input);
+        } catch (Exception e) {
+            System.out.println("❌ Format invalide (utilisez YYYY-MM-DD)");
+            return null;
+        }
+    }
+
 }
