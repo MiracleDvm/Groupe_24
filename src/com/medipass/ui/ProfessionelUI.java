@@ -24,10 +24,10 @@ public class ProfessionelUI implements MenuInterface {
     private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public ProfessionelUI(Scanner sc,
-                          ProfessionnelSante professionnel,
-                          PatientService patientService,
-                          ConsultationService consultationService,
-                          DataService dataService) {
+            ProfessionnelSante professionnel,
+            PatientService patientService,
+            ConsultationService consultationService,
+            DataService dataService) {
         this.sc = sc;
         this.professionnel = professionnel;
         this.patientService = patientService;
@@ -47,7 +47,7 @@ public class ProfessionelUI implements MenuInterface {
             System.out.println("║ 2) Programmer une consultation      ║");
             System.out.println("║ 3) Voir mon planning                ║");
             System.out.println("║ 4) Clôturer une consultation        ║");
-            System.out.println("║ 5) Voir antécédents patient         ║");
+            System.out.println("║ 5) Gestion des antécédents          ║");
             System.out.println("║ 0) Se déconnecter                   ║");
             System.out.println("╚═════════════════════════════════════╝");
             System.out.print("Votre choix: ");
@@ -59,11 +59,11 @@ public class ProfessionelUI implements MenuInterface {
                 case "2" ->
                     programmerConsultation();
                 case "3" ->
-                    afficherPlanning();
+                    menuPlanning();
                 case "4" ->
                     clotureConsultation();
                 case "5" ->
-                    afficherAntecedentsPatient();
+                    menuAntecedents();
                 case "0" ->
                     continuer = false;
                 default ->
@@ -302,40 +302,46 @@ public class ProfessionelUI implements MenuInterface {
     /* ===================== PLANNING ===================== */
 
     private void menuPlanning() {
-        System.out.println("\n╔═══════════════════════════════════════╗");
-        System.out.println("║  PLANNING DE " + professionnel.getNom() + " " + professionnel.getPrenom());
-        System.out.println("╠═══════════════════════════════════════╣");
-        System.out.println("║ 1) Planning complet                   ║");
-        System.out.println("║ 2) Planning du jour                   ║");
-        System.out.println("║ 3) Planning de la semaine             ║");
-        System.out.println("║ 4) Planning du mois                   ║");
-        System.out.println("║ 5) Planning personnalisé              ║");
-        System.out.println("║ 0) Retour                             ║");
-        System.out.println("╚═══════════════════════════════════════╝");
-        System.out.print("Votre choix: ");
-        String choix = sc.nextLine().trim();
+        boolean continuer = true;
+        while (continuer) {
+            System.out.println("\n╔═══════════════════════════════════════╗");
+            System.out.println("║  PLANNING DE " + professionnel.getNom() + " " + professionnel.getPrenom());
+            System.out.println("╠═══════════════════════════════════════╣");
+            System.out.println("║ 1) Planning complet                   ║");
+            System.out.println("║ 2) Planning du jour                   ║");
+            System.out.println("║ 3) Planning de la semaine             ║");
+            System.out.println("║ 4) Planning du mois                   ║");
+            System.out.println("║ 5) Planning personnalisé              ║");
+            System.out.println("║ 0) Retour                             ║");
+            System.out.println("╚═══════════════════════════════════════╝");
+            System.out.print("Votre choix: ");
+            String choix = sc.nextLine().trim();
 
-        switch (choix) {
-            case "1" -> afficherPlanningComplet();
-            case "2" -> afficherPlanningJour();
-            case "3" -> afficherPlanningSemaine();
-            case "4" -> afficherPlanningMois();
-            case "5" -> afficherPlanningPersonnalise();
-            case "0" -> {}
-            default -> System.out.println("❌ Choix invalide");
+            switch (choix) {
+                case "1" -> afficherPlanningComplet();
+                case "2" -> afficherPlanningJour();
+                case "3" -> afficherPlanningSemaine();
+                case "4" -> afficherPlanningMois();
+                case "5" -> afficherPlanningPersonnalise();
+                case "0" -> {
+                    continuer = false;
+                }
+                default -> System.out.println("❌ Choix invalide");
+            }
         }
     }
 
     private void afficherPlanningComplet() {
-        System.out.println("\n=== PLANNING COMPLET DE " + professionnel.getNom() + " " + professionnel.getPrenom() + " ===");
+        System.out.println(
+                "\n=== PLANNING COMPLET DE " + professionnel.getNom() + " " + professionnel.getPrenom() + " ===");
         List<Consultation> planning = professionnel.getPlanning();
         if (planning.isEmpty()) {
             System.out.println("Aucune consultation programmée");
         } else {
             planning.stream()
-                .filter(c -> !"annulée".equalsIgnoreCase(c.getStatut()))
-                .sorted((c1, c2) -> c1.getDateHeure().compareTo(c2.getDateHeure()))
-                .forEach(c -> System.out.println(c));
+                    .filter(c -> !"annulée".equalsIgnoreCase(c.getStatut()))
+                    .sorted((c1, c2) -> c1.getDateHeure().compareTo(c2.getDateHeure()))
+                    .forEach(c -> System.out.println(c));
         }
     }
 
@@ -343,7 +349,7 @@ public class ProfessionelUI implements MenuInterface {
         System.out.print("Date (YYYY-MM-DD) [Entrée pour aujourd'hui]: ");
         String input = sc.nextLine().trim();
         LocalDate date = input.isEmpty() ? LocalDate.now() : parseDate(input);
-        
+
         if (date != null) {
             System.out.println(consultationService.afficherPlanningJour(professionnel, date));
         }
@@ -352,10 +358,8 @@ public class ProfessionelUI implements MenuInterface {
     private void afficherPlanningSemaine() {
         System.out.print("Date de début de semaine (YYYY-MM-DD) [Entrée pour cette semaine]: ");
         String input = sc.nextLine().trim();
-        LocalDate dateDebut = input.isEmpty() ? 
-            LocalDate.now().with(java.time.DayOfWeek.MONDAY) : 
-            parseDate(input);
-        
+        LocalDate dateDebut = input.isEmpty() ? LocalDate.now().with(java.time.DayOfWeek.MONDAY) : parseDate(input);
+
         if (dateDebut != null) {
             System.out.println(consultationService.afficherPlanningSemaine(professionnel, dateDebut));
         }
@@ -365,11 +369,11 @@ public class ProfessionelUI implements MenuInterface {
         System.out.print("Année [Entrée pour année actuelle]: ");
         String anneeStr = sc.nextLine().trim();
         int annee = anneeStr.isEmpty() ? LocalDate.now().getYear() : Integer.parseInt(anneeStr);
-        
+
         System.out.print("Mois (1-12) [Entrée pour mois actuel]: ");
         String moisStr = sc.nextLine().trim();
         int mois = moisStr.isEmpty() ? LocalDate.now().getMonthValue() : Integer.parseInt(moisStr);
-        
+
         System.out.println(consultationService.afficherPlanningMois(professionnel, annee, mois));
     }
 
@@ -378,10 +382,10 @@ public class ProfessionelUI implements MenuInterface {
         LocalDate debut = parseDate(sc.nextLine().trim());
         System.out.print("Date de fin (YYYY-MM-DD): ");
         LocalDate fin = parseDate(sc.nextLine().trim());
-        
+
         if (debut != null && fin != null) {
             System.out.println(consultationService.afficherPlanningPeriode(
-                professionnel, debut.atStartOfDay(), fin.atTime(23, 59)));
+                    professionnel, debut.atStartOfDay(), fin.atTime(23, 59)));
         }
     }
 
@@ -403,7 +407,8 @@ public class ProfessionelUI implements MenuInterface {
             case "1" -> afficherAntecedentsPatient();
             case "2" -> ajouterAntecedent();
             case "3" -> afficherHistoriqueComplet();
-            case "0" -> {}
+            case "0" -> {
+            }
             default -> System.out.println("❌ Choix invalide");
         }
     }
@@ -411,12 +416,12 @@ public class ProfessionelUI implements MenuInterface {
     private void afficherAntecedentsPatient() {
         int patientId = lireEntier("ID du patient: ");
         Patient patient = patientService.findPatientById(patientId);
-        
+
         if (patient == null) {
             System.out.println("❌ Patient non trouvé");
             return;
         }
-        
+
         List<Antecedent> antecedents = patientService.getAntecedentsPatient(patientId);
 
         System.out.println("\n=== ANTÉCÉDENTS DE " + patient.getNom() + " " + patient.getPrenom() + " ===");
@@ -432,13 +437,13 @@ public class ProfessionelUI implements MenuInterface {
     private void ajouterAntecedent() {
         System.out.println("\n--- Ajout d'un antécédent ---");
         int patientId = lireEntier("ID du patient: ");
-        
+
         Patient patient = patientService.findPatientById(patientId);
         if (patient == null) {
             System.out.println("❌ Patient non trouvé");
             return;
         }
-        
+
         System.out.println("Patient : " + patient.getNom() + " " + patient.getPrenom());
         System.out.println("\nTypes d'antécédents :");
         System.out.println("  - allergie (médicaments, aliments, etc.)");
@@ -447,27 +452,27 @@ public class ProfessionelUI implements MenuInterface {
         System.out.println("  - antécédents familiaux");
         System.out.println("  - traitement en cours");
         System.out.println("  - autre\n");
-        
+
         String type = lireChaine("Type d'antécédent: ");
         String description = lireChaine("Description détaillée: ");
-        
+
         System.out.println("\nDate de survenue/diagnostic");
         System.out.print("Date (YYYY-MM-DD) [Entrée pour aujourd'hui]: ");
         String dateStr = sc.nextLine().trim();
         LocalDate date = dateStr.isEmpty() ? LocalDate.now() : parseDate(dateStr);
-        
+
         if (date == null) {
             System.out.println("❌ Date invalide, utilisation de la date du jour");
             date = LocalDate.now();
         }
-        
+
         System.out.println("\nNiveau de gravité :");
         System.out.println("  1) Bénin");
         System.out.println("  2) Modéré");
         System.out.println("  3) Grave");
         System.out.print("Votre choix (1-3): ");
         String graviteChoice = sc.nextLine().trim();
-        
+
         String gravite;
         switch (graviteChoice) {
             case "1" -> gravite = "bénin";
@@ -478,13 +483,13 @@ public class ProfessionelUI implements MenuInterface {
                 gravite = "modéré";
             }
         }
-        
+
         System.out.print("\nL'antécédent est-il toujours actif/pertinent ? (o/n) [o]: ");
         String actifStr = sc.nextLine().trim().toLowerCase();
         boolean actif = actifStr.isEmpty() || actifStr.equals("o") || actifStr.equals("oui");
 
         Antecedent antecedent = new Antecedent(type, description, date, gravite, actif);
-        
+
         if (patientService.ajouterAntecedentAuPatient(patientId, antecedent)) {
             System.out.println("\n✓ Antécédent ajouté avec succès");
             System.out.println("  Type: " + type);
@@ -501,23 +506,23 @@ public class ProfessionelUI implements MenuInterface {
     private void afficherHistoriqueComplet() {
         int patientId = lireEntier("ID du patient: ");
         Patient patient = patientService.findPatientById(patientId);
-        
+
         if (patient == null) {
             System.out.println("❌ Patient non trouvé");
             return;
         }
-        
+
         System.out.println("\n╔═══════════════════════════════════════════════════════╗");
         System.out.println("║  DOSSIER MÉDICAL COMPLET                              ║");
         System.out.println("╚═══════════════════════════════════════════════════════╝");
-        
+
         // Informations du patient
         System.out.println("\n=== PATIENT ===");
         System.out.println("Nom: " + patient.getNom() + " " + patient.getPrenom());
         System.out.println("ID: " + patient.getId());
         System.out.println("Numéro SS: " + patient.getNumeroSecuriteSociale());
         System.out.println("Groupe sanguin: " + patient.getGroupeSanguin());
-        
+
         // Antécédents
         System.out.println("\n=== ANTÉCÉDENTS ===");
         List<Antecedent> antecedents = patient.getDossierMedical().getAntecedents();
@@ -528,7 +533,7 @@ public class ProfessionelUI implements MenuInterface {
                 System.out.println(a);
             }
         }
-        
+
         // Consultations
         System.out.println("\n=== CONSULTATIONS ===");
         List<Consultation> consultations = patient.getDossierMedical().getConsultations();
@@ -557,7 +562,7 @@ public class ProfessionelUI implements MenuInterface {
     }
 
     /* ===================== UTILITAIRES ===================== */
-    
+
     private String lireChaine(String prompt) {
         System.out.print(prompt);
         return sc.nextLine().trim();
