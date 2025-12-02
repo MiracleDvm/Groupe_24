@@ -141,11 +141,10 @@ public class AdminUI implements MenuInterface {
         System.out.println("\n╔══════════════════════════════════════════════════════════╗");
         System.out.println("║           DROITS D'ACCES                                 ║");
         System.out.println("╠══════════════════════════════════════════════════════════╣");
-        System.out.println("║ Le droit d'acces est une chaine de minimum '1' caractere ║");
-        System.out.println("║ et de maximum '5' caracteres qui specifie l'acces a un   ║");
-        System.out.println("║ ou plusieurs menus utilisateur. Si un droit d'acces est  ║");
+        System.out.println("║ Le droit d'accès est une chaîne de minimum '1' caractère ║");
+        System.out.println("║ et de maximum '5' caractères qui spécifie l'accès à un   ║");
+        System.out.println("║ ou plusieurs menus utilisateur. Si un droit d'accès est  ║");
         System.out.println("║ '143', il donne acces aux options 1,4 et 3 du menu utili-║");
-        System.out.println("║                                                          ║");
         System.out.println("║ sateur, et ainsi de suite .                              ║");
         System.out.println("║ Options disponibles:                                     ║");
         System.out.println("║ 1) Gestion des patients                                  ║");
@@ -154,10 +153,10 @@ public class AdminUI implements MenuInterface {
         System.out.println("║ 4) Clôturer une consultation                             ║");
         System.out.println("║ 5) Gestion des antécédents                               ║");
         System.out.println("║                                                          ║");
-        System.out.println("║ NB: Ne pas entrer un droit d'acces superieur a '5'       ║");
+        System.out.println("║ NB: Ne pas entrer un droit d'accès superieur a '5'       ║");
         System.out.println("╚══════════════════════════════════════════════════════════╝");
         String login = lireChaine("Login de l'utilisateur: ");
-        String accessLevel = lireChaine("Entrez les droits d'acces: ");
+        String accessLevel = lireChaine("Entrez les droits d'accès: ");
 
         if (accessLevel.length() > 0 && accessLevel.length() <= 5) {
             boolean success = adminService.modifierDroitAcces(login, accessLevel);
@@ -165,10 +164,10 @@ public class AdminUI implements MenuInterface {
                 System.out.println("✓ Droit d'acces modifié avec succès");
                 sauvegarderDonnees();
             } else {
-                System.out.println("❌ Operation echouee");
+                System.out.println("❌ Operation echouée");
             }
         } else {
-            System.out.println("❌ Operation echouee, veuillez entrer un droit d'acces valide.");
+            System.out.println("❌ Operation echouée, veuillez entrer un droit d'accès valide.");
 
         }
     }
@@ -266,11 +265,10 @@ public class AdminUI implements MenuInterface {
         System.out.println("\n╔══════════════════════════════════════════════════════════╗");
         System.out.println("║           DROITS D'ACCES                                 ║");
         System.out.println("╠══════════════════════════════════════════════════════════╣");
-        System.out.println("║ Le droit d'acces est une chaine de minimum '1' caractere ║");
-        System.out.println("║ et de maximum '5' caracteres qui specifie l'acces a un   ║");
-        System.out.println("║ ou plusieurs menus utilisateur. Si un droit d'acces est  ║");
+        System.out.println("║ Le droit d'accès est une chaine de minimum '1' caractère ║");
+        System.out.println("║ et de maximum '5' caractères qui spécifie l'accès à un   ║");
+        System.out.println("║ ou plusieurs menus utilisateur. Si un droit d'accès est  ║");
         System.out.println("║ '143', il donne acces aux options 1,4 et 3 du menu utili-║");
-        System.out.println("║                                                          ║");
         System.out.println("║ sateur, et ainsi de suite .                              ║");
         System.out.println("║ Options disponibles:                                     ║");
         System.out.println("║ 1) Gestion des patients                                  ║");
@@ -279,9 +277,9 @@ public class AdminUI implements MenuInterface {
         System.out.println("║ 4) Clôturer une consultation                             ║");
         System.out.println("║ 5) Gestion des antécédents                               ║");
         System.out.println("║                                                          ║");
-        System.out.println("║ NB: Ne pas entrer un droit d'acces superieur a '5'       ║");
+        System.out.println("║ NB: Ne pas entrer un droit d'accès superieur a '5'       ║");
         System.out.println("╚══════════════════════════════════════════════════════════╝");
-        String accessLevels = lireChaine("Droits d'acces: ");
+        String accessLevels = lireChaine("Droits d'accès: ");
 
         com.medipass.user.ProfessionnelSante pro = new com.medipass.user.ProfessionnelSante(
                 login, mdp, "PRO", accessLevels, nom, prenom, specialite, "NUM" + System.currentTimeMillis() % 10000);
