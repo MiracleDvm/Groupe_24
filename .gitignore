@@ -13,6 +13,13 @@ target/
 *.swp
 *.swo
 
+# Java generated files
+# Bytecode and archives
+*.class
+*.jar
+*.war
+*.ear
+
 # OS generated files
 .DS_Store
 .DS_Store?
@@ -33,5 +40,15 @@ Thumbs.db
 *.tmp
 *.temp
 
-# CSV files
+#Csv files
 *.csv
+
+#Gradle cache
+.gradle/
+
+#Gradle daemon
+gradle.properties.bak
+
+.gradle-history
+
+daemon
