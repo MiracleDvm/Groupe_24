@@ -187,7 +187,6 @@ public class AdminUI implements MenuInterface {
 
         if (success) {
             System.out.println("✓ Compte " + (action.equals("0") ? "désactivé" : "activé") + " avec succès");
-            System.out.println("✓ Compte " + (action.equals("0") ? "désactivé" : "activé") + " avec succès");
             sauvegarderDonnees();
         } else {
             System.out.println("❌ Opération échouée");
