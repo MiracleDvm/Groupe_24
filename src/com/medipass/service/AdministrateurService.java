@@ -23,12 +23,12 @@ public class AdministrateurService {
             return false;
         }
         utilisateurs.add(utilisateur);
-        
+
         // Si c'est un professionnel, l'ajouter aussi à la liste spécifique
         if (utilisateur instanceof ProfessionnelSante) {
             professionnels.add((ProfessionnelSante) utilisateur);
         }
-        
+
         return true;
     }
 
@@ -40,12 +40,12 @@ public class AdministrateurService {
         if (utilisateur == null) {
             return false;
         }
-        
+
         utilisateurs.remove(utilisateur);
         if (utilisateur instanceof ProfessionnelSante) {
             professionnels.remove(utilisateur);
         }
-        
+
         return true;
     }
 
@@ -147,10 +147,11 @@ public class AdministrateurService {
         return true;
     }
 
-        /**
+    /**
      * Modifie les droits d'acces d'un utilisateur
      */
-    public boolean modifierDroitAcces(String loginID, String accessLevels) {
+    
+    public boolean modifierDroitAccesGeneraux(String loginID, String accessLevels) {
         ProfessionnelSante professionnelSante = findProfessionnel(loginID);
         if (professionnelSante == null) {
             return false;
@@ -158,7 +159,15 @@ public class AdministrateurService {
         professionnelSante.setAccessLevels(accessLevels);
         return true;
     }
-
+    
+    public boolean modifierDroitAccesSurPatient(String loginID, String patientsAccessLevels) {
+        ProfessionnelSante professionnelSante = findProfessionnel(loginID);
+        if (professionnelSante == null) {
+            return false;
+        }
+        professionnelSante.setPatientsAccessLevels(patientsAccessLevels);
+        return true;
+    }
     /**
      * Obtient le nombre total de professionnels
      */
@@ -175,7 +184,7 @@ public class AdministrateurService {
         if (utilisateur == null) {
             return "Utilisateur non trouvé";
         }
-        
+
         StringBuilder sb = new StringBuilder();
         sb.append("=== INFORMATIONS UTILISATEUR ===\n");
         sb.append("Login: ").append(utilisateur.getLoginID()).append("\n");
@@ -186,14 +195,14 @@ public class AdministrateurService {
         sb.append("Rôle: ").append(utilisateur.getRole()).append("\n");
         sb.append("Droits d'accès:").append(professionnelSante.getAccessLevels()).append("\n");
         sb.append("Statut: ").append(utilisateur.isActif() ? "Actif" : "Inactif").append("\n");
-        
+
         if (utilisateur instanceof ProfessionnelSante) {
             ProfessionnelSante pro = (ProfessionnelSante) utilisateur;
             sb.append("Spécialité: ").append(pro.getSpecialite()).append("\n");
             sb.append("Numéro d'ordre: ").append(pro.getNumeroOrdre()).append("\n");
             sb.append("Consultations programmées: ").append(pro.getNombreConsultations()).append("\n");
         }
-        
+
         return sb.toString();
     }
 

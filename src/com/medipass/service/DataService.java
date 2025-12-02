@@ -83,12 +83,13 @@ public class DataService {
     public void saveProfessionnels(List<ProfessionnelSante> pros) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(PROS_FILE))) {
             // Écrire l'en-tête
-            writer.println("login;password;accessLevel;nom;prenom;specialite;numeroOrdre;horairesDisponibilite");
+            writer.println("login;password;accessLevel;patientsAccessLevel;nom;prenom;specialite;numeroOrdre;horairesDisponibilite");
             for (ProfessionnelSante p : pros) {
-                writer.printf("%s;%s;%s;%s;%s;%s;%s;%s\n",
+                writer.printf("%s;%s;%s;%s;%s;%s;%s;%s;%s\n",
                         p.getLoginID(),
                         p.getPassword(),
                         p.getAccessLevels(),
+                        p.getPatientsAccessLevels(),
                         p.getNom(),
                         p.getPrenom(),
                         p.getSpecialite(),
@@ -119,9 +120,9 @@ public class DataService {
                 if (parts.length >= 6) {
                     try {
                         ProfessionnelSante p = new ProfessionnelSante(
-                                parts[0], parts[1], "PRO", parts[2], parts[3], parts[4], parts[5], parts[6]);
-                        if (parts.length > 6 && !parts[6].isEmpty()) {
-                            p.setHorairesDisponibilite(parts[6]);
+                                parts[0], parts[1], "PRO", parts[2], parts[3], parts[4], parts[5], parts[6], parts[7]);
+                        if (parts.length > 7 && !parts[7].isEmpty()) {
+                            p.setHorairesDisponibilite(parts[7]);
                         }
                         pros.add(p);
                     } catch (Exception e) {

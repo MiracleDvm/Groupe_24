@@ -117,15 +117,15 @@ public class ProfessionelUI implements MenuInterface {
 
             switch (choix) {
                 case "1" ->
-                    creerPatient(professionnel.getAccessLevels());
+                    creerPatient(professionnel.getPatientsAccessLevels());
                 case "2" ->
-                    listerPatients(professionnel.getAccessLevels());
+                    listerPatients(professionnel.getPatientsAccessLevels());
                 case "3" ->
-                    consulterDossierPatient(professionnel.getAccessLevels());
+                    consulterDossierPatient(professionnel.getPatientsAccessLevels());
                 case "4" ->
-                    modifierPatient(professionnel.getAccessLevels());
+                    modifierPatient(professionnel.getPatientsAccessLevels());
                 case "5" ->
-                    ajouterAntecedent(professionnel.getAccessLevels());
+                    ajouterAntecedent(professionnel.getPatientsAccessLevels());
                 case "0" ->
                     continuer = false;
                 default ->

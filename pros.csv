@@ -1,4 +1,5 @@
-login;password;accessLevel;nom;prenom;specialite;numeroOrdre;horairesDisponibilite
-raven45;raven;12;Soren;Khan;Cardiologue;NUM7373;NUM7373
-rana34;rana;1245;Ellen;Rana;Dentiste;NUM774;NUM774
-miracledvm;dvmamf;1234;DOSSOU;Miracle;G�n�raliste;NUM2762;NUM2762
+login;password;accessLevel;patientsAccessLevel;nom;prenom;specialite;numeroOrdre;horairesDisponibilite
+raven45;raven;12;null;Khan;Cardiologue;NUM7373;NUM7373;NUM7373
+rana34;rana;1245;null;Rana;Dentiste;NUM774;NUM774;NUM774
+miracledvm;dvmamf;1234;null;Miracle;G�n�raliste;NUM2762;NUM2762;NUM2762
+lois45;loisLane;12345;12345;Lane;Lois;Dentiste;NUM4925;NUM4925
