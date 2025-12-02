@@ -24,7 +24,6 @@ public class AdminUI implements MenuInterface {
     private final AdministrateurService adminService;
     private final StatistiquesService statsService;
     private final DataService dataService;
-    private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public AdminUI(Scanner sc,
             Administrateur admin,
@@ -40,7 +39,6 @@ public class AdminUI implements MenuInterface {
         this.adminService = adminService;
         this.statsService = statsService;
         this.dataService = dataService;
-        this.exportService = new CSVExportService(dataService, patientService,adminService,consultationService);
     }
 
     @Override
@@ -51,10 +49,9 @@ public class AdminUI implements MenuInterface {
             System.out.println("║  MENU ADMINISTRATEUR              ║");
             System.out.println("╠═══════════════════════════════════╣");
             System.out.println("║ 1) Gestion des utilisateurs       ║");
-            System.out.println("║ 2) Gestion des patients           ║");
-            System.out.println("║ 3) Statistiques du système        ║");
-            System.out.println("║ 4) Sauvegarder les données        ║");
-            System.out.println("║ 5) Se déconnecter                 ║");
+            System.out.println("║ 2) Statistiques du système        ║");
+            System.out.println("║ 3) Sauvegarder les données        ║");
+            System.out.println("║ 0) Se déconnecter                 ║");
             System.out.println("╚═══════════════════════════════════╝");
             System.out.print("Votre choix: ");
             String choix = sc.nextLine().trim();
@@ -66,7 +63,7 @@ public class AdminUI implements MenuInterface {
                     afficherStatistiques();
                 case "3" ->
                     sauvegarderDonnees();
-                case "5" ->
+                case "0" ->
                     continuer = false;
                 default ->
                     System.out.println("❌ Choix invalide");
@@ -85,9 +82,11 @@ public class AdminUI implements MenuInterface {
             System.out.println("║ 1) Lister les professionnels       ║");
             System.out.println("║ 2) Afficher un utilisateur         ║");
             System.out.println("║ 3) Modifier contact utilisateur    ║");
-            System.out.println("║ 4) Activer/Désactiver compte       ║");
-            System.out.println("║ 5) Créer un professionnel          ║");
-            System.out.println("║ 6) Retour                          ║");
+            System.out.println("║ 4) Gérer droits d'accès            ║");
+            System.out.println("║ 5) Activer/Désactiver compte       ║");
+            System.out.println("║ 6) Créer un professionnel          ║");
+            System.out.println("║ 7) Supprimer un utilisateur        ║");
+            System.out.println("║ 0) Retour                          ║");
             System.out.println("╚════════════════════════════════════╝");
             System.out.print("Votre choix: ");
             String choix = sc.nextLine().trim();
@@ -105,7 +104,9 @@ public class AdminUI implements MenuInterface {
                     activerDesactiverCompte();
                 case "6" ->
                     creerProfessionnel();
-                case "6" ->
+                case "7" ->
+                    supprimerUtilisateur();
+                case "0" ->
                     continuer = false;
                 default ->
                     System.out.println("❌ Choix invalide");
@@ -173,7 +174,8 @@ public class AdminUI implements MenuInterface {
 
     private void activerDesactiverCompte() {
         String login = lireChaine("Login de l'utilisateur: ");
-        String action = lireChaine("Action (activer/désactiver): ").toLowerCase();
+        String action = lireChaine("1) Activer compte utilisateur\n0) Désactiver compte utilisateur\nAction:")
+                .toLowerCase();
 
         boolean success = false;
         if ("1".equals(action)) {
@@ -183,113 +185,10 @@ public class AdminUI implements MenuInterface {
         }
 
         if (success) {
-            System.out.println("✓ Compte " + action + " avec succès");
+            System.out.println("✓ Compte " + (action.equals("0") ? "désactivé" : "activé") + " avec succès");
             sauvegarderDonnees();
         } else {
             System.out.println("❌ Opération échouée");
-        }
-    }
-
-    private void menuGestionPatients() {
-        boolean continuer = true;
-        while (continuer) {
-            System.out.println("\n╔════════════════════════════════════╗");
-            System.out.println("║  GESTION DES PATIENTS              ║");
-            System.out.println("╠════════════════════════════════════╣");
-            System.out.println("║ 1) Créer un patient                ║");
-            System.out.println("║ 2) Lister les patients             ║");
-            System.out.println("║ 3) Consulter dossier patient       ║");
-            System.out.println("║ 4) Modifier patient                ║");
-            System.out.println("║ 5) Ajouter antécédent              ║");
-            System.out.println("║ 6) Retour                          ║");
-            System.out.println("╚════════════════════════════════════╝");
-            System.out.print("Votre choix: ");
-            String choix = sc.nextLine().trim();
-
-            switch (choix) {
-                case "1" ->
-                    creerPatient();
-                case "2" ->
-                    listerPatients();
-                case "3" ->
-                    consulterDossierPatient();
-                case "4" ->
-                    modifierPatient();
-                case "5" ->
-                    ajouterAntecedent();
-                case "6" ->
-                    continuer = false;
-                default ->
-                    System.out.println("❌ Choix invalide");
-            }
-        }
-    }
-
-    private void creerPatient() {
-        System.out.println("\n--- Création d'un patient ---");
-        int id = lireEntier("ID: ");
-        String nom = lireChaine("Nom: ");
-        String prenom = lireChaine("Prénom: ");
-
-        Patient patient = new Patient(id, nom, prenom);
-        patient.setNumeroSecuriteSociale(lireChaine("Numéro de Sécurité Sociale: "));
-        patient.setGroupeSanguin(lireChaine("Groupe sanguin: "));
-
-        if (patientService.creerPatient(patient)) {
-            System.out.println("✓ Patient créé avec succès. Dossier ID: " + patient.getDossierMedical().getIdDossier());
-            sauvegarderDonnees();
-        } else {
-            System.out.println("❌ Erreur lors de la création (ID peut-être déjà utilisé)");
-        }
-    }
-
-    private void listerPatients() {
-        System.out.println("\n=== LISTE DES PATIENTS ===");
-        List<Patient> patients = patientService.getPatients();
-        if (patients.isEmpty()) {
-            System.out.println("Aucun patient enregistré");
-        } else {
-            for (Patient p : patients) {
-                System.out.printf("[%d] %s %s\n", p.getId(), p.getNom(), p.getPrenom());
-            }
-        }
-    }
-
-    private void consulterDossierPatient() {
-        int id = lireEntier("ID du patient: ");
-        System.out.println(patientService.afficherInfoPatient(id));
-    }
-
-    private void modifierPatient() {
-        int id = lireEntier("ID du patient: ");
-        String nom = lireChaine("Nouveau nom (ou vide): ");
-        String prenom = lireChaine("Nouveau prénom (ou vide): ");
-        String groupe = lireChaine("Nouveau groupe sanguin (ou vide): ");
-
-        if (patientService.modifierPatient(id,
-                nom.isEmpty() ? null : nom,
-                prenom.isEmpty() ? null : prenom,
-                null,
-                groupe.isEmpty() ? null : groupe)) {
-            System.out.println("✓ Patient modifié");
-            sauvegarderDonnees();
-        } else {
-            System.out.println("❌ Patient non trouvé");
-        }
-    }
-
-    private void ajouterAntecedent() {
-        int patientId = lireEntier("ID du patient: ");
-        String type = lireChaine("Type d'antécédent (allergie, maladie, intervention, etc.): ");
-        String description = lireChaine("Description: ");
-        String gravite = lireChaine("Gravité (bénin, modéré, grave): ");
-
-        Antecedent antecedent = new Antecedent(type, description, LocalDate.now(), gravite, true);
-        if (patientService.ajouterAntecedentAuPatient(patientId, antecedent)) {
-            System.out.println("✓ Antécédent ajouté");
-            sauvegarderDonnees();
-        } else {
-            System.out.println("❌ Patient non trouvé");
         }
     }
 
@@ -431,7 +330,8 @@ public class AdminUI implements MenuInterface {
         System.out.println("(Données sauvegardées)");
     }
 
-    // --- Méthodes utilitaires pour la saisie sécurisée ---
+    /* ===================== UTILITAIRES ===================== */
+
     private String lireChaine(String prompt) {
         System.out.print(prompt);
         return sc.nextLine().trim();
