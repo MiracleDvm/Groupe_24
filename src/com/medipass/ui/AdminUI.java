@@ -326,7 +326,7 @@ public class AdminUI implements MenuInterface {
         dataService.savePatients(patientService.getPatients());
         dataService.saveProfessionnels(adminService.getProfessionnels());
         dataService.saveConsultations(consultationService.getConsultations());
-        dataService.saveAntecedents(patientService.getPatients());
+        //dataService.saveAntecedents(patientService.getPatients());
         System.out.println("(Données sauvegardées)");
     }
 

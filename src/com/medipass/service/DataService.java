@@ -13,12 +13,8 @@ import com.medipass.model.*;
 import com.medipass.user.*;
 
 /**
-<<<<<<< HEAD
- * Service de persistance des données en fichiers CSV
-=======
  * Service de gestion des données avec Tablesaw 0.43.1
  * Gère le chargement (racine du projet) et la sauvegarde/exportation (dossier exportedFiles/).
->>>>>>> 85fc14e8dd740cac6c1046a2201ef4aea3ad4242
  * Gère le chargement (racine du projet) et la sauvegarde/exportation (dossier
  * exportedFiles/).
  */
@@ -32,21 +28,6 @@ public class DataService {
 
     // ========== PATIENTS ==========
 
-<<<<<<< HEAD
-    public void savePatients(List<Patient> patients) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(PATIENTS_FILE))) {
-            // Écrire l'en-tête
-            writer.println("id;nom;prenom;sexe;dateDeNaissance;numeroSecuriteSociale;groupeSanguin");
-            for (Patient p : patients) {
-                writer.printf("%d;%s;%s;%s;%s;%s;%s\n",
-                        p.getId(),
-                        p.getNom(),
-                        p.getPrenom(),
-                        p.getSexe(),
-                        p.getDateDeNaissance(),
-                        p.getNumeroSecuriteSociale() != null ? p.getNumeroSecuriteSociale() : "",
-                        p.getGroupeSanguin() != null ? p.getGroupeSanguin() : "");
-=======
     // Dossier de sortie pour les exports (Relatif à la racine du projet)
     private static final String EXPORT_DIR = "exportedFiles/";
 
@@ -66,9 +47,8 @@ public class DataService {
             boolean success = dir.mkdirs();
             if (!success) {
                 throw new IOException("Impossible de créer le répertoire d'exportation : " + EXPORT_DIR);
->>>>>>> 85fc14e8dd740cac6c1046a2201ef4aea3ad4242
                 // Afficher le chemin absolu en cas d'échec de création
-                throw new IOException("Impossible de créer le répertoire d'exportation : " + dir.getAbsolutePath());
+                // throw new IOException("Impossible de créer le répertoire d'exportation : " + dir.getAbsolutePath());
             }
             System.out.println("Création du répertoire d'exportation : " + EXPORT_DIR);
         }
@@ -322,6 +302,7 @@ public int importProfessionnels(String importFilePath, List<ProfessionnelSante> 
         try {
             String login = row.getString("login");
             String password = row.getString("password");
+            String accessLevels = row.getString("accessLevels");
             String nom = row.getString("nom");
             String prenom = row.getString("prenom");
             String specialite = row.getString("specialite");
@@ -332,7 +313,7 @@ public int importProfessionnels(String importFilePath, List<ProfessionnelSante> 
             
             if (!exists) {
                 ProfessionnelSante newPro = new ProfessionnelSante(
-                    login, password, "PRO", nom, prenom, specialite, numeroOrdre
+                    login, password, "PRO",accessLevels, nom, prenom, specialite, numeroOrdre
                 );
                 
                 String horaires = row.getString("horairesDisponibilite");
@@ -469,30 +450,6 @@ public int importConsultations(String importFilePath, List<Consultation> existin
             return patients;
         }
 
-<<<<<<< HEAD
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            boolean isHeader = true;
-            while ((line = reader.readLine()) != null) {
-                if (isHeader) {
-                    isHeader = false;
-                    continue;
-                }
-                String[] parts = line.split(";");
-                if (parts.length >= 3) {
-                    try {
-                        int id = Integer.parseInt(parts[0]);
-                        Patient p = new Patient(id, parts[1], parts[2]);
-                        if (parts.length > 3 && !parts[3].isEmpty()) {
-                            p.setNumeroSecuriteSociale(parts[3]);
-                        }
-                        if (parts.length > 4 && !parts[4].isEmpty()) {
-                            p.setGroupeSanguin(parts[4]);
-                        }
-                        patients.add(p);
-                    } catch (NumberFormatException e) {
-                        System.err.println("Erreur parsing patient: " + e.getMessage());
-=======
         try {
             // Configuration de lecture avec séparateur point-virgule
             CsvReadOptions options = CsvReadOptions.builder(file)
@@ -516,7 +473,6 @@ public int importConsultations(String importFilePath, List<Consultation> existin
                     String nss = row.getString("numeroSecuriteSociale");
                     if (nss != null && !nss.isEmpty()) {
                         p.setNumeroSecuriteSociale(nss);
->>>>>>> 85fc14e8dd740cac6c1046a2201ef4aea3ad4242
                     }
 
                     String gs = row.getString("groupeSanguin");
@@ -537,27 +493,6 @@ public int importConsultations(String importFilePath, List<Consultation> existin
         return patients;
     }
 
-<<<<<<< HEAD
-    // ========== PROFESSIONNELS ==========
-
-    public void saveProfessionnels(List<ProfessionnelSante> pros) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(PROS_FILE))) {
-            // Écrire l'en-tête
-            writer.println("login;password;accessLevel;nom;prenom;specialite;numeroOrdre;horairesDisponibilite");
-            for (ProfessionnelSante p : pros) {
-                writer.printf("%s;%s;%s;%s;%s;%s;%s;%s\n",
-                        p.getLoginID(),
-                        p.getPassword(),
-                        p.getAccessLevels(),
-                        p.getNom(),
-                        p.getPrenom(),
-                        p.getSpecialite(),
-                        p.getNumeroOrdre(),
-                        p.getHorairesDisponibilite());
-            }
-        } catch (IOException e) {
-            System.err.println("Erreur sauvegarde professionnels: " + e.getMessage());
-=======
     // ==================== PROFESSIONNELS (CHARGEMENT & SAUVEGARDE) ====================
     // ==================== PROFESSIONNELS (CHARGEMENT & SAUVEGARDE)
     // ====================
@@ -588,7 +523,6 @@ public int importConsultations(String importFilePath, List<Consultation> existin
 
         } catch (Exception e) {
             System.err.println("Erreur sauvegarde professionnels dans " + filename + ": " + e.getMessage());
->>>>>>> 85fc14e8dd740cac6c1046a2201ef4aea3ad4242
         }
     }
 
@@ -604,27 +538,6 @@ public int importConsultations(String importFilePath, List<Consultation> existin
             return pros;
         }
 
-<<<<<<< HEAD
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            boolean isHeader = true;
-            while ((line = reader.readLine()) != null) {
-                if (isHeader) {
-                    isHeader = false;
-                    continue;
-                }
-                String[] parts = line.split(";");
-                if (parts.length >= 6) {
-                    try {
-                        ProfessionnelSante p = new ProfessionnelSante(
-                                parts[0], parts[1], "PRO", parts[2], parts[3], parts[4], parts[5], parts[6]);
-                        if (parts.length > 6 && !parts[6].isEmpty()) {
-                            p.setHorairesDisponibilite(parts[6]);
-                        }
-                        pros.add(p);
-                    } catch (Exception e) {
-                        System.err.println("Erreur parsing professionnel: " + e.getMessage());
-=======
         try {
             CsvReadOptions options = CsvReadOptions.builder(file)
                     .separator(';')
@@ -638,18 +551,18 @@ public int importConsultations(String importFilePath, List<Consultation> existin
                 try {
                     String login = row.getString("login");
                     String password = row.getString("password");
+                    String accessLevel = row.getString("accessLevels");
                     String nom = row.getString("nom");
                     String prenom = row.getString("prenom");
                     String specialite = row.getString("specialite");
                     String numeroOrdre = row.getString("numeroOrdre");
 
                     ProfessionnelSante p = new ProfessionnelSante(
-                            login, password, "PRO", nom, prenom, specialite, numeroOrdre);
+                            login, password, "PRO",accessLevel, nom, prenom, specialite, numeroOrdre);
 
                     String horaires = row.getString("horairesDisponibilite");
                     if (horaires != null && !horaires.isEmpty()) {
                         p.setHorairesDisponibilite(horaires);
->>>>>>> 85fc14e8dd740cac6c1046a2201ef4aea3ad4242
                     }
 
                     pros.add(p);
@@ -666,26 +579,6 @@ public int importConsultations(String importFilePath, List<Consultation> existin
         return pros;
     }
 
-<<<<<<< HEAD
-    // ========== CONSULTATIONS ==========
-
-    public void saveConsultations(List<Consultation> consultations) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(CONSULTATIONS_FILE))) {
-            writer.println("dateHeure;motif;professionnelLogin;patientId;dureeMinutes;statut;observations;diagnostic");
-            for (Consultation c : consultations) {
-                writer.printf("%s;%s;%s;%d;%d;%s;%s;%s\n",
-                        c.getDateHeure().toString(),
-                        c.getMotif(),
-                        c.getProfessionnel().getLoginID(),
-                        c.getPatient().getId(),
-                        c.getDureeMinutes(),
-                        c.getStatut(),
-                        c.getObservations() != null ? c.getObservations().replace(";", ",") : "",
-                        c.getDiagnostic() != null ? c.getDiagnostic().replace(";", ",") : "");
-            }
-        } catch (IOException e) {
-            System.err.println("Erreur sauvegarde consultations: " + e.getMessage());
-=======
     // ==================== CONSULTATIONS (CHARGEMENT & SAUVEGARDE) ====================
     // ==================== CONSULTATIONS (CHARGEMENT & SAUVEGARDE)
     // ====================
@@ -716,7 +609,6 @@ public int importConsultations(String importFilePath, List<Consultation> existin
 
         } catch (Exception e) {
             System.err.println("Erreur sauvegarde consultations dans " + filename + ": " + e.getMessage());
->>>>>>> 85fc14e8dd740cac6c1046a2201ef4aea3ad4242
         }
     }
 
@@ -732,23 +624,6 @@ public int importConsultations(String importFilePath, List<Consultation> existin
             return consultations;
         }
 
-<<<<<<< HEAD
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            boolean isHeader = true;
-            while ((line = reader.readLine()) != null) {
-                if (isHeader) {
-                    isHeader = false;
-                    continue;
-                }
-                String[] parts = line.split(";");
-                if (parts.length >= 4) {
-                    try {
-                        LocalDateTime date = LocalDateTime.parse(parts[0]);
-                        String motif = parts[1];
-                        String proLogin = parts[2];
-                        int patientId = Integer.parseInt(parts[3]);
-=======
         try {
             CsvReadOptions options = CsvReadOptions.builder(file)
                     .separator(';')
@@ -757,7 +632,6 @@ public int importConsultations(String importFilePath, List<Consultation> existin
                     .build();
 
             Table consultTable = Table.read().csv(options);
->>>>>>> 85fc14e8dd740cac6c1046a2201ef4aea3ad4242
 
             for (Row row : consultTable) {
                 try {
@@ -815,77 +689,4 @@ public int importConsultations(String importFilePath, List<Consultation> existin
 
         return consultations;
     }
-<<<<<<< HEAD
-
-    // ========== ANTÉCÉDENTS ==========
-
-    /**
-     * Sauvegarde les antécédents de tous les patients
-     */
-    public void saveAntecedents(List<Patient> patients) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(ANTECEDENTS_FILE))) {
-            writer.println("patientId;type;description;date;gravite;actif");
-            for (Patient p : patients) {
-                for (Antecedent a : p.getDossierMedical().getAntecedents()) {
-                    writer.printf("%d;%s;%s;%s;%s;%s\n",
-                        p.getId(),
-                        a.getType(),
-                        a.getDescription() != null ? a.getDescription().replace(";", ",") : "",
-                        a.getDate(),
-                        a.getGravite(),
-                        a.isActif()
-                    );
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Erreur sauvegarde antécédents: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Charge les antécédents depuis le fichier CSV
-     */
-    public void loadAntecedents(List<Patient> patients) {
-        File file = new File(ANTECEDENTS_FILE);
-        if (!file.exists()) {
-            return;
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            boolean isHeader = true;
-            while ((line = reader.readLine()) != null) {
-                if (isHeader) {
-                    isHeader = false;
-                    continue;
-                }
-                String[] parts = line.split(";");
-                if (parts.length >= 5) {
-                    try {
-                        int patientId = Integer.parseInt(parts[0]);
-                        Patient patient = patients.stream()
-                            .filter(p -> p.getId() == patientId)
-                            .findFirst().orElse(null);
-                        
-                        if (patient != null) {
-                            Antecedent ant = new Antecedent(
-                                parts[1], // type
-                                parts[2], // description
-                                LocalDate.parse(parts[3]), // date
-                                parts[4], // gravité
-                                parts.length > 5 ? Boolean.parseBoolean(parts[5]) : true // actif
-                            );
-                            patient.getDossierMedical().ajouterAntecedent(ant);
-                        }
-                    } catch (Exception e) {
-                        System.err.println("Erreur parsing antécédent: " + e.getMessage());
-                    }
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Erreur chargement antécédents: " + e.getMessage());
-        }
-    }
-=======
->>>>>>> 85fc14e8dd740cac6c1046a2201ef4aea3ad4242
 }
