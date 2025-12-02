@@ -36,7 +36,7 @@ public class AdminUI implements MenuInterface {
         this.adminService = adminService;
         this.statsService = statsService;
         this.dataService = dataService;
-        this.exportService = new CSVExportService(dataService, patientService, adminService, consultationService);    
+        this.exportService = new CSVExportService(dataService, patientService, adminService, consultationService);
         this.importService = new CSVImportService(dataService);
 
     }
@@ -317,7 +317,7 @@ public class AdminUI implements MenuInterface {
 
             switch (choix) {
                 case "1" ->
-                exportService.
+                    afficherMenu();
                 case "2" ->
                     afficherUtilisateur();
                 case "3" ->
