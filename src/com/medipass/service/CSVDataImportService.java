@@ -65,7 +65,7 @@ public class CSVDataImportService {
     /**
      * Importe de nouvelles consultations à partir d'un fichier CSV et met à jour la liste en mémoire 
      * et le fichier consultations.csv.
-     * @param importFilePath Le chemin du fichier CSV source.
+     * @param importFilePath Le chemin du fichier CSV source de l'import.
      * @throws Exception Si la lecture ou la sauvegarde échoue.
      */
     public void importConsultationsData(String importFilePath) throws Exception {
