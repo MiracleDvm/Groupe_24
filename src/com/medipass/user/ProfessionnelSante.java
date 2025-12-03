@@ -17,29 +17,29 @@ public class ProfessionnelSante extends Utilisateur {
     private final String specialite;
     private final String numeroOrdre;
     private String accessLevels;
-    private String patientsAccessLevels;
+    // private String patientsAccessLevels;
     private final List<Consultation> planning = new ArrayList<>();
     private String horairesDisponibilite; // ex: "9h-12h, 14h-18h"
 
-    public ProfessionnelSante(String loginID, String mdp, String role, String accessLevels, String patientsAccessLevels,
+    public ProfessionnelSante(String loginID, String mdp, String role, String accessLevels,
             String specialite,
             String numeroOrdre) {
         super(loginID, mdp, role);
         this.specialite = specialite;
         this.numeroOrdre = numeroOrdre;
         this.accessLevels = accessLevels;
-        this.patientsAccessLevels = patientsAccessLevels;
+        // this.patientsAccessLevels = patientsAccessLevels;
         this.horairesDisponibilite = "9h-17h"; // Par défaut
     }
 
-    public ProfessionnelSante(String loginID, String mdp, String role, String accessLevels, String patientsAccessLevels,
+    public ProfessionnelSante(String loginID, String mdp, String role, String accessLevels,
             String nom, String prenom, String specialite,
             String numeroOrdre) {
         super(loginID, mdp, role, nom, prenom);
         this.specialite = specialite;
         this.numeroOrdre = numeroOrdre;
         this.accessLevels = accessLevels;
-        this.patientsAccessLevels = patientsAccessLevels;
+        // this.patientsAccessLevels = patientsAccessLevels;
         this.horairesDisponibilite = "9h-17h";
     }
 
@@ -86,17 +86,17 @@ public class ProfessionnelSante extends Utilisateur {
         return accessLevels;
     }
 
-    public String getPatientsAccessLevels() {
-        return patientsAccessLevels;
-    }
+    // public String getPatientsAccessLevels() {
+    //     return patientsAccessLevels;
+    // }
 
     public void setAccessLevels(String levels) {
         accessLevels = levels;
     }
 
-    public void setPatientsAccessLevels(String levels) {
-        patientsAccessLevels = levels;
-    }
+    // public void setPatientsAccessLevels(String levels) {
+    //     patientsAccessLevels = levels;
+    // }
 
     public List<Consultation> getConsultationsEffectuees() {
         List<Consultation> effectuees = new ArrayList<>();

@@ -160,41 +160,41 @@ public class Main {
         System.out.print(prompt);
         return sc.nextLine().trim();
     }
-    private static String lirePasswordCache(String prompt) {
-        // 1. Tente d'obtenir une instance de Console
-        Console console = System.console();
+    // private static String lirePasswordCache(String prompt) {
+    //     // 1. Tente d'obtenir une instance de Console
+    //     Console console = System.console();
         
-        if (console == null) {
-            // Cas 1 : Exécution depuis un IDE ou sans véritable terminal
-            System.out.print(prompt + " (Avertissement: Entrée visible) : ");
+    //     if (console == null) {
+    //         // Cas 1 : Exécution depuis un IDE ou sans véritable terminal
+    //         System.out.print(prompt + " (Avertissement: Entrée visible) : ");
             
-            // Revenir à une saisie standard si la console n'est pas disponible
-            // Utiliser le Scanner partagé 'sc' pour éviter de créer et ne pas fermer un nouveau Scanner.
-            return sc.nextLine();
-        }
+    //         // Revenir à une saisie standard si la console n'est pas disponible
+    //         // Utiliser le Scanner partagé 'sc' pour éviter de créer et ne pas fermer un nouveau Scanner.
+    //         return sc.nextLine();
+    //     }
 
-        // Cas 2 : Console réelle disponible (Masquage fonctionnel)
-        char[] passwordChars = null;
-        String password = null;
+    //     // Cas 2 : Console réelle disponible (Masquage fonctionnel)
+    //     char[] passwordChars = null;
+    //     String password = null;
 
-        try {
-            // 2. Utiliser readPassword() pour la saisie masquée
-            // L'entrée est retournée sous forme de tableau de caractères (char[]) pour plus de sécurité.
-            passwordChars = console.readPassword(prompt + " : ");
+    //     try {
+    //         // 2. Utiliser readPassword() pour la saisie masquée
+    //         // L'entrée est retournée sous forme de tableau de caractères (char[]) pour plus de sécurité.
+    //         passwordChars = console.readPassword(prompt + " : ");
             
-            // 3. Convertir le tableau de caractères en String pour un usage temporaire
-            if (passwordChars != null) {
-                password = new String(passwordChars);
-            }
-        } finally {
-            // 4. IMPORTANT : Effacer le tableau de caractères de la mémoire
-            if (passwordChars != null) {
-                Arrays.fill(passwordChars, ' ');
-            }
-        }
+    //         // 3. Convertir le tableau de caractères en String pour un usage temporaire
+    //         if (passwordChars != null) {
+    //             password = new String(passwordChars);
+    //         }
+    //     } finally {
+    //         // 4. IMPORTANT : Effacer le tableau de caractères de la mémoire
+    //         if (passwordChars != null) {
+    //             Arrays.fill(passwordChars, ' ');
+    //         }
+    //     }
 
-        return password;
-    }
+    //     return password;
+    // }
 
     private static int lireEntier(String prompt) {
         while (true) {

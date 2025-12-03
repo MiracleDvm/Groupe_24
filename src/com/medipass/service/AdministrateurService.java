@@ -160,14 +160,14 @@ public class AdministrateurService {
         return true;
     }
     
-    public boolean modifierDroitAccesSurPatient(String loginID, String patientsAccessLevels) {
-        ProfessionnelSante professionnelSante = findProfessionnel(loginID);
-        if (professionnelSante == null) {
-            return false;
-        }
-        professionnelSante.setPatientsAccessLevels(patientsAccessLevels);
-        return true;
-    }
+    // public boolean modifierDroitAccesSurPatient(String loginID, String patientsAccessLevels) {
+    //     ProfessionnelSante professionnelSante = findProfessionnel(loginID);
+    //     if (professionnelSante == null) {
+    //         return false;
+    //     }
+    //     professionnelSante.setPatientsAccessLevels(patientsAccessLevels);
+    //     return true;
+    // }
     /**
      * Obtient le nombre total de professionnels
      */
