@@ -1,66 +1,74 @@
-@startuml ProgrammerConsultation
+@startuml 
 title Programmer une consultation
 
 actor "Professionnel de santé" as ProfSante
-participant "InterfaceConsole" as UI
+participant "ProfessionelUI" as UI
+participant "PatientService" as PatientService
 participant "ConsultationService" as ConsultService
 participant "ProfessionnelSante" as ProfObj
-participant "Patient" as Patient
+participant "Patient" as PatientObj
 participant "DossierMedical" as Dossier
-database "BaseDeDonnees" as DB
+participant "DataService" as DataService
 
+== Sélection du patient ==
 ProfSante -> UI : Demander programmation consultation
 activate UI
 
-UI -> DB : listerPatients()
-activate DB
-DB --> UI : listePatients
-deactivate DB
+UI --> ProfSante : Demande idPatient
+ProfSante -> UI : Saisir idPatient
 
-UI --> ProfSante : Afficher liste patients
-ProfSante -> UI : Sélectionner patient
+UI -> PatientService : findPatientById(idPatient)
+activate PatientService
+PatientService --> UI : patient ou null
+deactivate PatientService
 
-UI -> DB : rechercherPatient(idPatient)
-activate DB
-DB --> UI : patient
-deactivate DB
+alt Patient trouvé
+    UI --> ProfSante : Afficher infos patient\n+ demander date/heure/motif
 
-UI --> ProfSante : Formulaire consultation
-ProfSante -> UI : Saisir date, heure, motif
+    ProfSante -> UI : Saisir dateHeure, durée, motif
 
-UI -> ConsultService : programmerConsultation(date, heure, motif, idProf, idPatient)
-activate ConsultService
+    ' Récupération du professionnel connecté
+    UI -> ProfObj : (profesionnel courant)
 
-ConsultService -> DB : chargerProfessionnel(idProf)
-activate DB
-DB --> ConsultService : professionnel
-deactivate DB
+    == Appel du service de consultation ==
+    UI -> ConsultService : programmerConsultation(dateHeure, motif, ProfObj, PatientObj)
+    activate ConsultService
 
-ConsultService -> ProfObj : estDisponible(date, heure)
-alt Disponible
-    ConsultService -> DB : creerConsultation(date, heure, motif, idProf, idPatient)
-    activate DB
-    DB --> ConsultService : consultationCreee
-    deactivate DB
+    ' Dans le service : validations et disponibilités
+    ConsultService -> ConsultService : vérifier paramètres\n+ date future\n+ motif non vide
 
-    ConsultService -> DB : chargerDossierMedical(idPatient)
-    activate DB
-    DB --> ConsultService : dossierMedical
-    deactivate DB
+    ConsultService -> ProfObj : estDisponiblePour(nouvelleConsultation)
+    alt Professionnel disponible
+        ConsultService -> PatientObj : getDossierMedical()
+        activate PatientObj
+        PatientObj --> ConsultService : dossierMedical
+        deactivate PatientObj
 
-    ConsultService -> Dossier : ajouterConsultation(consultation)
-    ConsultService -> DB : sauvegarderConsultation(consultation)
-    activate DB
-    DB --> ConsultService : confirmation
-    deactivate DB
+        ConsultService -> Dossier : ajouterConsultation(nouvelleConsultation)
+        ConsultService -> ProfObj : ajouterConsultation(nouvelleConsultation)
+        ConsultService -> ConsultService : ajouter à la liste consultations
 
-    ConsultService --> UI : succes
-    deactivate ConsultService
-    UI --> ProfSante : Confirmation programmation
-else Non disponible
-    ConsultService --> UI : erreurDisponibilite
-    deactivate ConsultService
-    UI --> ProfSante : Message indisponibilité
+        ConsultService --> UI : true (succès)
+        deactivate ConsultService
+
+        ' Mise à jour durée et sauvegarde
+        UI -> ConsultService : getConsultations()
+        ConsultService --> UI : listeConsultations
+
+        UI -> DataService : saveConsultations(listeConsultations)
+        activate DataService
+        DataService --> UI : sauvegardé
+        deactivate DataService
+
+        UI --> ProfSante : ✓ Consultation programmée
+    else Non disponible ou invalide
+        ConsultService --> UI : false (erreur/conflict)
+        deactivate ConsultService
+        UI --> ProfSante : ❌ Impossible de programmer\n(conflit ou erreur)
+    end
+
+else Patient introuvable
+    UI --> ProfSante : ❌ Patient non trouvé
 end
 
 deactivate UI
