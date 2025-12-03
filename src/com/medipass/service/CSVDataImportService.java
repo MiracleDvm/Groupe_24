@@ -87,4 +87,26 @@ public class CSVDataImportService {
         
         System.out.println("✅ " + importedCount + " nouvelles consultations importées et liées.");
     }
+
+    /**
+     * Importe de nouveaux antécédents à partir d'un fichier CSV et met à jour la liste en mémoire 
+     * et le fichier antecedents.csv.
+     * @param importFilePath Le chemin du fichier CSV source de l'import.
+     * @throws Exception Si la lecture ou la sauvegarde échoue.
+     */
+    public void importAntecedentsData(String importFilePath) throws Exception {
+        System.out.println("\n--- Importation des Antécédents depuis " + importFilePath + " ---");
+        
+        // 1. Récupérer la liste des patients en mémoire
+        List<Patient> patients = patientService.getPatients();
+        
+        // 2. Vérification rapide avant l'importation des antécédents
+        if (patients.isEmpty()) {
+            System.err.println("❌ IMPOSSIBLE D'IMPORTER: La liste des Patients est vide. Veuillez importer les patients d'abord.");
+            return;
+        }
+
+        // 3. Déléguer la lecture, l'ajout et la sauvegarde au DataService
+        dataService.importAntecedents(importFilePath, patients);
+    }
 }

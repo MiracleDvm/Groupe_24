@@ -1,0 +1,3 @@
+patientId;type;description;date;gravite;actif
+291125;allergie;Allergie aux arachides;2025-11-29;moyenne;true
+291126;maladie chronique;Diabète de type 2;2025-11-28;forte;true

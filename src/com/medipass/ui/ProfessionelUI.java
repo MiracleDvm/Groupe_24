@@ -547,7 +547,7 @@ public class ProfessionelUI implements MenuInterface {
     private void sauvegarderDonnees() {
         dataService.savePatients(patientService.getPatients());
         dataService.saveConsultations(consultationService.getConsultations());
-        //dataService.saveAntecedents(patientService.getPatients());
+        dataService.saveAntecedents(patientService.getPatients());
         System.out.println("(Données sauvegardées)");
     }
 

@@ -134,7 +134,7 @@ public class Main {
             }
 
             // Antécédents
-            //dataService.loadAntecedents(patientService.getPatients());
+            dataService.loadAntecedents(patientService.getPatients());
 
             System.out.println("✓ Données chargées: "
                     + patients.size() + " patients, "

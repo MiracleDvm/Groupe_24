@@ -216,9 +216,22 @@ public class DataService {
                     String nom = row.getString("nom");
                     String prenom = row.getString("prenom");
                     String specialite = row.getString("specialite");
-                    String numeroOrdre = row.getString("numeroOrdre");
-                    String accessLevels = "STANDARD";
-                    if (row.columnNames().contains("accessLevels")) {
+                    // Handle both String and Integer types for numeroOrdre
+                    String numeroOrdre;
+                    if (importTable.column("numeroOrdre").type().name().equals("INTEGER")) {
+                        // If column is inferred as INTEGER, get it as integer and convert to string
+                        numeroOrdre = String.valueOf(row.getInt("numeroOrdre"));
+                    } else {
+                        // Otherwise get it as string as before
+                        numeroOrdre = row.getString("numeroOrdre");
+                    }
+                    // Handle both String and Integer types for accessLevels
+                    String accessLevels;
+                    if (importTable.column("accessLevels").type().name().equals("INTEGER")) {
+                        // If column is inferred as INTEGER, get it as integer and convert to string
+                        accessLevels = String.valueOf(row.getInt("accessLevels"));
+                    } else {
+                        // Otherwise get it as string as before
                         accessLevels = row.getString("accessLevels");
                     }
                     ProfessionnelSante newPro = new ProfessionnelSante(login, password, "PRO", accessLevels, "ALL", nom, prenom, specialite, numeroOrdre);
@@ -351,13 +364,29 @@ public class DataService {
                 try {
                     String login = row.getString("login");
                     String password = row.getString("password");
-                    String accessLevel = row.getString("accessLevels");
+                    // Handle both String and Integer types for accessLevels
+                    String accessLevel;
+                    if (table.column("accessLevels").type().name().equals("INTEGER")) {
+                        // If column is inferred as INTEGER, get it as integer and convert to string
+                        accessLevel = String.valueOf(row.getInt("accessLevels"));
+                    } else {
+                        // Otherwise get it as string as before
+                        accessLevel = row.getString("accessLevels");
+                    }
                     String nom = row.getString("nom");
                     String prenom = row.getString("prenom");
                     String specialite = row.getString("specialite");
-                    String numeroOrdre = row.getString("numeroOrdre");
+                    // Handle both String and Integer types for numeroOrdre
+                    String numeroOrdre;
+                    if (table.column("numeroOrdre").type().name().equals("INTEGER")) {
+                        // If column is inferred as INTEGER, get it as integer and convert to string
+                        numeroOrdre = String.valueOf(row.getInt("numeroOrdre"));
+                    } else {
+                        // Otherwise get it as string as before
+                        numeroOrdre = row.getString("numeroOrdre");
+                    }
                     String accessLevels = "STANDARD";
-                    if (row.columnNames().contains("accessLevels")) accessLevels = row.getString("accessLevels");
+                    if (row.columnNames().contains("accessLevels")) accessLevels = accessLevel;
                     
                     ProfessionnelSante p = new ProfessionnelSante(login, password, "PRO", accessLevels, "ALL", nom, prenom, specialite, numeroOrdre);
                     if (row.columnNames().contains("horairesDisponibilite")) p.setHorairesDisponibilite(row.getString("horairesDisponibilite"));
@@ -438,6 +467,20 @@ public class DataService {
         } catch (IOException e) { System.err.println("Erreur sauvegarde antécédents: " + e.getMessage()); }
     }
 
+    public void saveAntecedentsAs(List<Patient> patients, String filename) {
+        try {
+            ensureExportDirectoryExists();
+            try (PrintWriter writer = new PrintWriter(new FileWriter(EXPORT_DIR + filename))) {
+                writer.println("patientId;type;description;date;gravite;actif");
+                for (Patient p : patients) {
+                    for (Antecedent a : p.getDossierMedical().getAntecedents()) {
+                        writer.printf("%d;%s;%s;%s;%s;%s\n", p.getId(), a.getType(), a.getDescription() != null ? a.getDescription().replace(";", ",") : "", a.getDate(), a.getGravite(), a.isActif());
+                    }
+                }
+            }
+        } catch (IOException e) { System.err.println("Erreur sauvegarde antécédents: " + e.getMessage()); }
+    }
+
     public void loadAntecedents(List<Patient> patients) {
         File file = new File(ANTECEDENTS_FILE);
         if (!file.exists()) return;
@@ -459,5 +502,41 @@ public class DataService {
                 }
             }
         } catch (Exception e) { System.err.println("Erreur chargement antécédents: " + e.getMessage()); }
+    }
+
+    public void importAntecedents(String importFilePath, List<Patient> existingPatients) throws Exception {
+        File file = new File(importFilePath);
+        if (!file.exists()) {
+            throw new FileNotFoundException("Le fichier d'import n'existe pas : " + importFilePath);
+        }
+        
+        int importedCount = 0;
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            boolean isHeader = true;
+            while ((line = reader.readLine()) != null) {
+                if (isHeader) { isHeader = false; continue; }
+                String[] parts = line.split(";");
+                if (parts.length >= 5) {
+                    try {
+                        int patientId = Integer.parseInt(parts[0]);
+                        Patient patient = existingPatients.stream().filter(p -> p.getId() == patientId).findFirst().orElse(null);
+                        if (patient != null) {
+                            Antecedent ant = new Antecedent(parts[1], parts[2], LocalDate.parse(parts[3]), parts[4], parts.length > 5 ? Boolean.parseBoolean(parts[5]) : true);
+                            patient.getDossierMedical().ajouterAntecedent(ant);
+                            importedCount++;
+                        }
+                    } catch (Exception e) { 
+                        System.err.println("Erreur parsing antécédent: " + e.getMessage()); 
+                    }
+                }
+            }
+        }
+        saveAntecedents(existingPatients);
+        System.out.println("✅ " + importedCount + " nouveaux antécédents importés et sauvegardés.");
+    }
+
+    public Table loadAntecedentsTableForExport() throws IOException {
+        return loadTableFromExportDir("exportedAntecedents.csv");
     }
 }

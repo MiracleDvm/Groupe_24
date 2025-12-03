@@ -418,7 +418,7 @@ public class AdminUI implements MenuInterface {
         dataService.savePatients(patientService.getPatients());
         dataService.saveProfessionnels(adminService.getProfessionnels());
         dataService.saveConsultations(consultationService.getConsultations());
-        //dataService.saveAntecedents(patientService.getPatients());
+        dataService.saveAntecedents(patientService.getPatients());
         System.out.println("(Données sauvegardées)");
     }
 
@@ -431,6 +431,7 @@ public class AdminUI implements MenuInterface {
             System.out.println("║ 1) Importer Patients (CSV)         ║");
             System.out.println("║ 2) Importer Professionnels (CSV)   ║");
             System.out.println("║ 3) Importer Consultations (CSV)    ║");
+            System.out.println("║ 4) Importer Antécédents (CSV)      ║");
             System.out.println("║ 0) Retour                          ║");
             System.out.println("╚════════════════════════════════════╝");
             System.out.print("Votre choix: ");
@@ -449,6 +450,10 @@ public class AdminUI implements MenuInterface {
                     case "3" -> {
                         String path = lireChaine("Chemin du fichier CSV Consultations: ");
                         importService.importConsultationsData(path);
+                    }
+                    case "4" -> {
+                        String path = lireChaine("Chemin du fichier CSV Antécédents: ");
+                        importService.importAntecedentsData(path);
                     }
                     case "0" -> continuer = false;
                     default -> System.out.println("❌ Choix invalide");

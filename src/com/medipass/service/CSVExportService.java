@@ -20,6 +20,7 @@ public class CSVExportService {
     private static final String EXPORT_PATIENT_FILE = "exportedPatients.csv";
     private static final String EXPORT_PROS_FILE = "exportedPros.csv";
     private static final String EXPORT_CONSULTATION_FILE = "exportedConsultations.csv";
+    private static final String EXPORT_ANTECEDENTS_FILE = "exportedAntecedents.csv";
 
     public CSVExportService(DataService dataService, PatientService patientService,
                             AdministrateurService adminService, ConsultationService consultationService) {
@@ -41,6 +42,7 @@ public class CSVExportService {
             dataService.savePatientsAs(patientService.getPatients(), EXPORT_PATIENT_FILE);
             dataService.saveProfessionnelsAs(adminService.getProfessionnels(), EXPORT_PROS_FILE);
             dataService.saveConsultationsAs(consultationService.getConsultations(), EXPORT_CONSULTATION_FILE);
+            dataService.saveAntecedentsAs(patientService.getPatients(), EXPORT_ANTECEDENTS_FILE);
 
             System.out.println("✓ Exportation de fichiers individuels terminée dans le répertoire : " + dataService.getExportDir());
 

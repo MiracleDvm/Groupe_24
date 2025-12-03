@@ -2,3 +2,10 @@ login;password;accessLevels;nom;prenom;specialite;numeroOrdre;horairesDisponibil
 raven45;raven;1234;Soren;Khan;Cardiologue;NUM7373;NUM7373
 rana34;rana;STANDARD;Ellen;Rana;Dentiste;NUM774;NUM774
 miracledvm;dvmamf;STANDARD;DOSSOU;Miracle;G�n�raliste;NUM2762;NUM2762
+aya24;aya;123;SAKO;Ayanatou;Pharmacie;NUM1;8:00-17:00
+sio24;sio;123;SAKO;Sionata;Pharmacie;NUM2;8:00-17:00
+ali24;ali;123;SAKO;Aliou;Pharmacie;NUM3;8:00-17:00
+mam24;mam;123;SAKO;Mamadou;Pharmacie;NUM4;8:00-17:00
+fat24;fat;123;SAKO;Fatou;Pharmacie;NUM5;8:00-17:00
+dia24;dia;123;SAKO;Diakhabou;Pharmacie;NUM6;8:00-17:00
+bam24;bam;123;SAKO;Bamako;Pharmacie;NUM7;8:00-17:00
