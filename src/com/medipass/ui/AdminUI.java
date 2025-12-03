@@ -382,7 +382,7 @@ public class AdminUI implements MenuInterface {
     private void menuExporterDonnees() {
         System.out.println("\n--- Exportation des données ---");
         System.out.println("Cela va générer des fichiers CSV dans le dossier 'exportedFiles/'.");
-        String confirmation = lireChaine("Confirmer l'exportation ? (O/N): ");
+        String confirmation = lireChaine("Confirmer l'exportation ? (O / N): ");
         
         if (confirmation.equalsIgnoreCase("O")) {
             exportService.exportAllData();
