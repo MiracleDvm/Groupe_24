@@ -150,8 +150,34 @@ public class AdminUI implements MenuInterface {
     }
 
     private void gererDroitsAcces() {
+        boolean continuer = true;
+        while (continuer) {
+            System.out.println("\n╔════════════════════════════════════╗");
+            System.out.println("║  GESTION DES DROITS D'ACCES        ║");
+            System.out.println("╠════════════════════════════════════╣");
+            System.out.println("║ 1) Gérer droits d'accès generaux   ║");
+            System.out.println("║ 2) Gérer droits d'accès patients   ║");
+            System.out.println("║ 0) Retour                          ║");
+            System.out.println("╚════════════════════════════════════╝");
+            System.out.print("Votre choix: ");
+            String choix = sc.nextLine().trim();
+
+            switch (choix) {
+                case "1" ->
+                    gererDroitsAccesGeneraux();
+                case "2" ->
+                    gererDroitsAccesSurPatients();
+                case "0" ->
+                    continuer = false;
+                default ->
+                    System.out.println("❌ Choix invalide");
+            }
+        }
+    }
+
+    private void gererDroitsAccesGeneraux() {
         System.out.println("\n╔══════════════════════════════════════════════════════════╗");
-        System.out.println("║           DROITS D'ACCES                                 ║");
+        System.out.println("║           DROITS D'ACCES GENERAUX                        ║");
         System.out.println("╠══════════════════════════════════════════════════════════╣");
         System.out.println("║ Le droit d'accès est une chaîne de minimum '1' caractère ║");
         System.out.println("║ et de maximum '5' caractères qui spécifie l'accès à un   ║");
@@ -171,7 +197,42 @@ public class AdminUI implements MenuInterface {
         String accessLevel = lireChaine("Entrez les droits d'accès: ");
 
         if (accessLevel.length() > 0 && accessLevel.length() <= 5) {
-            boolean success = adminService.modifierDroitAcces(login, accessLevel);
+            boolean success = adminService.modifierDroitAccesGeneraux(login, accessLevel);
+            if (success) {
+                System.out.println("✓ Droit d'acces modifié avec succès");
+                sauvegarderDonnees();
+            } else {
+                System.out.println("❌ Operation echouée");
+            }
+        } else {
+            System.out.println("❌ Operation echouée, veuillez entrer un droit d'accès valide.");
+
+        }
+    }
+
+    private void gererDroitsAccesSurPatients() {
+        System.out.println("\n╔══════════════════════════════════════════════════════════╗");
+        System.out.println("║            DROITS D'ACCES GESTION DE PATIENTS            ║");
+        System.out.println("╠══════════════════════════════════════════════════════════╣");
+        System.out.println("║ Le droit d'accès est une chaîne de minimum '1' caractère ║");
+        System.out.println("║ et de maximum '5' caractères qui spécifie l'accès à un   ║");
+        System.out.println("║ ou plusieurs menus utilisateur. Si un droit d'accès est  ║");
+        System.out.println("║ '143', il donne acces aux options 1,4 et 3 du menu utili-║");
+        System.out.println("║ sateur, et ainsi de suite .                              ║");
+        System.out.println("║ Options disponibles:                                     ║");
+        System.out.println("║ 1) Créer un dossier medical                              ║");
+        System.out.println("║ 2) Lister les patients                                   ║");
+        System.out.println("║ 3) Consulter dossier patient                             ║");
+        System.out.println("║ 4) Modifier patient                                      ║");
+        System.out.println("║ 5) Ajouter antécédent                                    ║");
+        System.out.println("║                                                          ║");
+        System.out.println("║ NB: Ne pas entrer un droit d'accès superieur a '5'       ║");
+        System.out.println("╚══════════════════════════════════════════════════════════╝");
+        String login = lireChaine("Login de l'utilisateur: ");
+        String accessLevel = lireChaine("Entrez les droits d'accès sur les patients: ");
+
+        if (accessLevel.length() > 0 && accessLevel.length() <= 5) {
+            boolean success = adminService.modifierDroitAccesSurPatient(login, accessLevel);
             if (success) {
                 System.out.println("✓ Droit d'acces modifié avec succès");
                 sauvegarderDonnees();
@@ -292,9 +353,28 @@ public class AdminUI implements MenuInterface {
         System.out.println("║ NB: Ne pas entrer un droit d'accès superieur a '5'       ║");
         System.out.println("╚══════════════════════════════════════════════════════════╝");
         String accessLevels = lireChaine("Droits d'accès: ");
+        System.out.println("\n╔══════════════════════════════════════════════════════════╗");
+        System.out.println("║           DROITS D'ACCES GESTION DE PATIENTS             ║");
+        System.out.println("╠══════════════════════════════════════════════════════════╣");
+        System.out.println("║ Le droit d'accès est une chaine de minimum '1' caractère ║");
+        System.out.println("║ et de maximum '5' caractères qui spécifie l'accès à un   ║");
+        System.out.println("║ ou plusieurs menus utilisateur. Si un droit d'accès est  ║");
+        System.out.println("║ '143', il donne acces aux options 1,4 et 3 du menu utili-║");
+        System.out.println("║ sateur, et ainsi de suite .                              ║");
+        System.out.println("║ Options disponibles:                                     ║");
+        System.out.println("║ 1) Créer un dossier medical                              ║");
+        System.out.println("║ 2) Lister les patients                                   ║");
+        System.out.println("║ 3) Consulter dossier patient                             ║");
+        System.out.println("║ 4) Modifier patient                                      ║");
+        System.out.println("║ 5) Ajouter antécédent                                    ║");
+        System.out.println("║                                                          ║");
+        System.out.println("║ NB: Ne pas entrer un droit d'accès superieur a '5'       ║");
+        System.out.println("╚══════════════════════════════════════════════════════════╝");
+        String patientsAccessLevels = lireChaine("Droits d'accès pour le menu de gestion des patients: ");
 
         com.medipass.user.ProfessionnelSante pro = new com.medipass.user.ProfessionnelSante(
-                login, mdp, "PRO", accessLevels, nom, prenom, specialite, "NUM" + System.currentTimeMillis() % 10000);
+                login, mdp, "PRO", accessLevels, patientsAccessLevels, nom, prenom, specialite,
+                "NUM" + System.currentTimeMillis() % 10000);
 
         if (adminService.creerCompte(pro)) {
             System.out.println("✓ Professionnel créé. Vous pouvez maintenant vous connecter.");
