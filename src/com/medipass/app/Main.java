@@ -1,5 +1,6 @@
 package com.medipass.app;
 
+import java.io.Console;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -27,6 +28,11 @@ public class Main {
     private static final AdministrateurService adminService = new AdministrateurService();
     private static final StatistiquesService statsService = new StatistiquesService();
     private static final DataService dataService = new DataService();
+    // Nouveaux services pour Import/Export
+    private static final CSVDataImportService importService = new CSVDataImportService(
+            dataService, patientService, adminService, consultationService);
+    private static final CSVExportService exportService = new CSVExportService(
+            dataService, patientService, adminService, consultationService);
 
     public static void main(String[] args) {
         initializationSysteme();
@@ -65,8 +71,9 @@ public class Main {
     }
 
     private static void handleAuthentification() {
-        String login = lireChaine("\nLogin : ");
+        String login = lireChaine("\nLogin: ");
         String mdp = lirePasswordCache("Mot de passe");
+        // String mdp = lireChaine("Mot de passe: ");
 
         if (auth.login(login, mdp)) {
             Utilisateur u = auth.getCurrentUser();
@@ -82,7 +89,7 @@ public class Main {
                 case Administrateur admin -> {
                     MenuInterface menu = new AdminUI(
                             sc, admin, patientService, consultationService,
-                            adminService, statsService, dataService);
+                            adminService, statsService, dataService, importService, exportService);
                     menu.afficherMenu();
                 }
                 default -> System.out.println("Menu non disponible pour ce rôle.");
@@ -127,7 +134,7 @@ public class Main {
             }
 
             // Antécédents
-            dataService.loadAntecedents(patientService.getPatients());
+            //dataService.loadAntecedents(patientService.getPatients());
 
             System.out.println("✓ Données chargées: "
                     + patients.size() + " patients, "
@@ -143,7 +150,7 @@ public class Main {
         dataService.savePatients(patientService.getPatients());
         dataService.saveProfessionnels(adminService.getProfessionnels());
         dataService.saveConsultations(consultationService.getConsultations());
-        dataService.saveAntecedents(patientService.getPatients());
+        //dataService.saveAntecedents(patientService.getPatients());
         System.out.println("(Données sauvegardées)");
     }
 
@@ -212,5 +219,40 @@ public class Main {
                         "❌ Format de date invalide. Utilisez 'yyyy-MM-dd HH:mm' (ex: 2023-12-25 14:30)");
             }
         }
+    }
+    private static String lirePasswordCache(String prompt) {
+        // 1. Tente d'obtenir une instance de Console
+        Console console = System.console();
+        
+        if (console == null) {
+            // Cas 1 : Exécution depuis un IDE ou sans véritable terminal
+            System.out.print(prompt + " (Avertissement: Entrée visible) : ");
+            
+            // Revenir à une saisie standard si la console n'est pas disponible
+            // Utiliser le Scanner partagé 'sc' pour éviter de créer et ne pas fermer un nouveau Scanner.
+            return sc.nextLine();
+        }
+
+        // Cas 2 : Console réelle disponible (Masquage fonctionnel)
+        char[] passwordChars = null;
+        String password = null;
+
+        try {
+            // 2. Utiliser readPassword() pour la saisie masquée
+            // L'entrée est retournée sous forme de tableau de caractères (char[]) pour plus de sécurité.
+            passwordChars = console.readPassword(prompt + " : ");
+            
+            // 3. Convertir le tableau de caractères en String pour un usage temporaire
+            if (passwordChars != null) {
+                password = new String(passwordChars);
+            }
+        } finally {
+            // 4. IMPORTANT : Effacer le tableau de caractères de la mémoire
+            if (passwordChars != null) {
+                Arrays.fill(passwordChars, ' ');
+            }
+        }
+
+        return password;
     }
 }
