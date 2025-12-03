@@ -31,6 +31,19 @@ public class Consultation {
         this.statut = "programmée";
     }
 
+    public Consultation(int idConsultation, LocalDateTime dateHeure, String motif, ProfessionnelSante professionnel, Patient patient) {
+        this.idConsultation = idConsultation;
+        this.dateHeure = dateHeure;
+        this.motif = motif;
+        this.professionnel = professionnel;
+        this.patient = patient;
+        this.statut = "programmée";
+        // Update counter if necessary
+        if (idConsultation >= counter) {
+            counter = idConsultation + 1;
+        }
+    }
+
     // Getters
     public int getIdConsultation() { return idConsultation; }
     public LocalDateTime getDateHeure() { return dateHeure; }

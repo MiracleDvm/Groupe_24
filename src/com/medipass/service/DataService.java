@@ -128,6 +128,7 @@ public class DataService {
     private Table createConsultationTable(List<Consultation> consultations) {
         Table table = Table.create("Consultations");
         table.addColumns(
+                tech.tablesaw.api.IntColumn.create("idConsultation"),
                 tech.tablesaw.api.StringColumn.create("dateHeure"),
                 tech.tablesaw.api.StringColumn.create("motif"),
                 tech.tablesaw.api.StringColumn.create("professionnelLogin"),
@@ -139,6 +140,7 @@ public class DataService {
 
         for (Consultation c : consultations) {
             Row row = table.appendRow();
+            row.setInt("idConsultation", c.getIdConsultation());
             row.setString("dateHeure", c.getDateHeure().toString());
             row.setString("motif", c.getMotif());
             row.setString("professionnelLogin", c.getProfessionnel().getLoginID());
@@ -243,6 +245,7 @@ public class DataService {
                 throw new Exception("Structure de fichier Consultations invalide.");
             }
             try {
+                int idConsultation = row.columnNames().contains("idConsultation") ? row.getInt("idConsultation") : 0;
                 String proLogin = row.getString("professionnelLogin");
                 int patientId = row.getInt("patientId");
                 ProfessionnelSante pro = allPros.stream().filter(p -> p.getLoginID().equals(proLogin)).findFirst().orElse(null);
@@ -251,7 +254,12 @@ public class DataService {
                 if (pro != null && patient != null) {
                     LocalDateTime date = LocalDateTime.parse(row.getString("dateHeure"));
                     String motif = row.getString("motif");
-                    Consultation newConsultation = new Consultation(date, motif, pro, patient);
+                    Consultation newConsultation;
+                    if (idConsultation > 0) {
+                        newConsultation = new Consultation(idConsultation, date, motif, pro, patient);
+                    } else {
+                        newConsultation = new Consultation(date, motif, pro, patient);
+                    }
                     if (row.columnNames().contains("dureeMinutes")) newConsultation.setDureeMinutes(row.getInt("dureeMinutes"));
                     if (row.columnNames().contains("statut")) newConsultation.setStatut(row.getString("statut"));
                     if (row.columnNames().contains("observations")) newConsultation.setObservations(row.getString("observations").replace(";", ","));
@@ -389,6 +397,7 @@ public class DataService {
             Table table = Table.read().csv(CsvReadOptions.builder(file).separator(';').header(true).missingValueIndicator("", "null", "NULL").build());
             for (Row row : table) {
                 try {
+                    int idConsultation = row.columnNames().contains("idConsultation") ? row.getInt("idConsultation") : 0;
                     LocalDateTime date = LocalDateTime.parse(row.getString("dateHeure"));
                     String motif = row.getString("motif");
                     String proLogin = row.getString("professionnelLogin");
@@ -396,7 +405,12 @@ public class DataService {
                     ProfessionnelSante pro = pros.stream().filter(p -> p.getLoginID().equals(proLogin)).findFirst().orElse(null);
                     Patient patient = patients.stream().filter(p -> p.getId() == patientId).findFirst().orElse(null);
                     if (pro != null && patient != null) {
-                        Consultation c = new Consultation(date, motif, pro, patient);
+                        Consultation c;
+                        if (idConsultation > 0) {
+                            c = new Consultation(idConsultation, date, motif, pro, patient);
+                        } else {
+                            c = new Consultation(date, motif, pro, patient);
+                        }
                         if (row.columnNames().contains("dureeMinutes")) c.setDureeMinutes(row.getInt("dureeMinutes"));
                         if (row.columnNames().contains("statut")) c.setStatut(row.getString("statut"));
                         if (row.columnNames().contains("observations")) c.setObservations(row.getString("observations"));
