@@ -25,6 +25,11 @@ public class Main {
     private static final AdministrateurService adminService = new AdministrateurService();
     private static final StatistiquesService statsService = new StatistiquesService();
     private static final DataService dataService = new DataService();
+    // Nouveaux services pour Import/Export
+    private static final CSVDataImportService importService = new CSVDataImportService(
+            dataService, patientService, adminService, consultationService);
+    private static final CSVExportService exportService = new CSVExportService(
+            dataService, patientService, adminService, consultationService);
 
     public static void main(String[] args) {
         initializationSysteme();
@@ -80,7 +85,7 @@ public class Main {
                 case Administrateur admin -> {
                     MenuInterface menu = new AdminUI(
                             sc, admin, patientService, consultationService,
-                            adminService, statsService, dataService);
+                            adminService, statsService, dataService, importService, exportService);
                     menu.afficherMenu();
                 }
                 default -> System.out.println("Menu non disponible pour ce rôle.");

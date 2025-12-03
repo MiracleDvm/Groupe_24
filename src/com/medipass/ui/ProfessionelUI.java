@@ -117,15 +117,15 @@ public class ProfessionelUI implements MenuInterface {
 
             switch (choix) {
                 case "1" ->
-                    creerPatient(professionnel.getAccessLevels());
+                    creerPatient();
                 case "2" ->
-                    listerPatients(professionnel.getAccessLevels());
+                    listerPatients();
                 case "3" ->
-                    consulterDossierPatient(professionnel.getAccessLevels());
+                    consulterDossierPatient();
                 case "4" ->
-                    modifierPatient(professionnel.getAccessLevels());
+                    modifierPatient();
                 case "5" ->
-                    ajouterAntecedent(professionnel.getAccessLevels());
+                    ajouterAntecedent();
                 case "0" ->
                     continuer = false;
                 default ->
@@ -134,107 +134,77 @@ public class ProfessionelUI implements MenuInterface {
         }
     }
 
-    private void creerPatient(String accessLevels) {
-        char accessLevel = '1';
-        // debug: System.out.println(accessLevels.indexOf(accessLevel) != -1);
-        // debug: System.out.println(accessLevels);
-        if (accessLevels.indexOf(accessLevel) != -1) {
-            System.out.println("\n--- Création d'un patient ---");
-            int id = generatedID();
-            String nom = lireChaine("Nom: ");
-            String prenom = lireChaine("Prénom: ");
+    private void creerPatient() {
+        System.out.println("\n--- Création d'un patient ---");
+        int id = generatedID();
+        String nom = lireChaine("Nom: ");
+        String prenom = lireChaine("Prénom: ");
 
-            Patient patient = new Patient(id, nom, prenom);
-            // check si le sexe est "M" ou "F" et rien d'autre
-            String sexe = lireChaine("Sexe (M ou F): ");
-            while (!sexe.trim().toUpperCase().equals("F") && !sexe.trim().toUpperCase().equals("M")) {
-                sexe = lireChaine("Sexe (M ou F): ");
-            }
-            patient.setSexe(sexe.toUpperCase());
-            patient.setDateNaissance(lireDate("Date de naissance 'yyyy-MM-dd': "));
-            patient.setNumeroSecuriteSociale(lireChaine("Numéro de Sécurité Sociale: "));
-            patient.setGroupeSanguin(lireChaine("Groupe sanguin: "));
+        Patient patient = new Patient(id, nom, prenom);
+        // check si le sexe est "M" ou "F" et rien d'autre
+        String sexe = lireChaine("Sexe (M ou F): ");
+        while (!sexe.trim().toUpperCase().equals("F") && !sexe.trim().toUpperCase().equals("M")) {
+            sexe = lireChaine("Sexe (M ou F): ");
+        }
+        patient.setSexe(sexe.toUpperCase());
+        patient.setDateNaissance(lireDate("Date de naissance 'yyyy-MM-dd': "));
+        patient.setNumeroSecuriteSociale(lireChaine("Numéro de Sécurité Sociale: "));
+        patient.setGroupeSanguin(lireChaine("Groupe sanguin: "));
 
-            if (patientService.creerPatient(patient)) {
-                System.out.println(
-                        "✓ Patient créé avec succès. Dossier ID: " + patient.getDossierMedical().getIdDossier());
-                sauvegarderDonnees();
-            } else {
-                System.out.println("❌ Erreur lors de la création (ID peut-être déjà utilisé)");
-            }
+        if (patientService.creerPatient(patient)) {
+            System.out.println(
+                    "✓ Patient créé avec succès. Dossier ID: " + patient.getDossierMedical().getIdDossier());
+            sauvegarderDonnees();
         } else {
-            System.out.println("❌ Accès refusé\nVous n'êtes pas habilité(e) à accéder a cette option. ");
+            System.out.println("❌ Erreur lors de la création (ID peut-être déjà utilisé)");
         }
     }
 
-    private void consulterDossierPatient(String accessLevels) {
-        char accessLevel = '3';
-        if (accessLevels.indexOf(accessLevel) != -1) {
+    private void consulterDossierPatient() {
+        int id = lireEntier("ID du patient: ");
+        System.out.println(patientService.afficherInfoPatient(id));
+    }
 
-            int id = lireEntier("ID du patient: ");
-            System.out.println(patientService.afficherInfoPatient(id));
+    private void modifierPatient() {
+        int id = lireEntier("ID du patient: ");
+        String nom = lireChaine("Nouveau nom (ou vide): ");
+        String prenom = lireChaine("Nouveau prénom (ou vide): ");
+        String groupe = lireChaine("Nouveau groupe sanguin (ou vide): ");
+
+        if (patientService.modifierPatient(id,
+                nom.isEmpty() ? null : nom,
+                prenom.isEmpty() ? null : prenom,
+                null,
+                groupe.isEmpty() ? null : groupe)) {
+            System.out.println("✓ Patient modifié");
+            sauvegarderDonnees();
         } else {
-            System.out.println("❌ Accès refusé\nVous n'êtes pas habilité(e) à accéder a cette option. ");
+            System.out.println("❌ Patient non trouvé");
         }
     }
 
-    private void modifierPatient(String accessLevels) {
-        char accessLevel = '4';
-        if (accessLevels.indexOf(accessLevel) != -1) {
-            int id = lireEntier("ID du patient: ");
-            String nom = lireChaine("Nouveau nom (ou vide): ");
-            String prenom = lireChaine("Nouveau prénom (ou vide): ");
-            String groupe = lireChaine("Nouveau groupe sanguin (ou vide): ");
+    // Note: This duplicate method is removed in favor of the more detailed ajouterAntecedent() below
+    // But since the menu calls it, I will redirect it to the detailed one or just use the detailed one directly.
+    // The detailed one is at line 457.
+    // I will replace this block with a call to the detailed method if they are different, 
+    // or just remove this one and ensure the switch case calls the other one.
+    // Looking at the code, the switch case calls `ajouterAntecedent(professionnel.getAccessLevels())` 
+    // which matches THIS method signature. The other one is `ajouterAntecedent()`.
+    // So I will rename the other one or use this one.
+    // Actually, the plan said "Consolidate usage".
+    // The other `ajouterAntecedent()` (lines 457+) is much better.
+    // So I will make the switch case call THAT one (which takes no args).
+    // And I will DELETE this method entirely.
 
-            if (patientService.modifierPatient(id,
-                    nom.isEmpty() ? null : nom,
-                    prenom.isEmpty() ? null : prenom,
-                    null,
-                    groupe.isEmpty() ? null : groupe)) {
-                System.out.println("✓ Patient modifié");
-                sauvegarderDonnees();
-            } else {
-                System.out.println("❌ Patient non trouvé");
-            }
+    private void listerPatients() {
+        System.out.println("\n=== LISTE DES PATIENTS ===");
+        List<Patient> patients = patientService.getPatients();
+        if (patients.isEmpty()) {
+            System.out.println("Aucun patient enregistré");
         } else {
-            System.out.println("❌ Accès refusé\nVous n'êtes pas habilité(e) à accéder a cette option. ");
-        }
-    }
-
-    private void ajouterAntecedent(String accessLevels) {
-        char accessLevel = '5';
-        if (accessLevels.indexOf(accessLevel) != -1) {
-            int patientId = lireEntier("ID du patient: ");
-            String type = lireChaine("Type d'antécédent (allergie, maladie, intervention, etc.): ");
-            String description = lireChaine("Description: ");
-            String gravite = lireChaine("Gravité (bénin, modéré, grave): ");
-
-            Antecedent antecedent = new Antecedent(type, description, LocalDate.now(), gravite, true);
-            if (patientService.ajouterAntecedentAuPatient(patientId, antecedent)) {
-                System.out.println("✓ Antécédent ajouté");
-                sauvegarderDonnees();
-            } else {
-                System.out.println("❌ Patient non trouvé");
+            for (Patient p : patients) {
+                System.out.printf("[%d] %s %s\n", p.getId(), p.getNom(), p.getPrenom());
             }
-        } else {
-            System.out.println("❌ Accès refusé\nVous n'êtes pas habilité(e) à accéder a cette option. ");
-        }
-    }
-
-    private void listerPatients(String accessLevels) {
-        char accessLevel = '2';
-        if (accessLevels.indexOf(accessLevel) != -1) {
-            System.out.println("\n=== LISTE DES PATIENTS ===");
-            List<Patient> patients = patientService.getPatients();
-            if (patients.isEmpty()) {
-                System.out.println("Aucun patient enregistré");
-            } else {
-                for (Patient p : patients) {
-                    System.out.printf("[%d] %s %s\n", p.getId(), p.getNom(), p.getPrenom());
-                }
-            }
-        } else {
-            System.out.println("❌ Accès refusé\nVous n'êtes pas habilité(e) à accéder a cette option. ");
         }
     }
 

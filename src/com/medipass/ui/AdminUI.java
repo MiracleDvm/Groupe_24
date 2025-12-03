@@ -24,6 +24,8 @@ public class AdminUI implements MenuInterface {
     private final AdministrateurService adminService;
     private final StatistiquesService statsService;
     private final DataService dataService;
+    private final CSVDataImportService importService;
+    private final CSVExportService exportService;
 
     public AdminUI(Scanner sc,
             Administrateur admin,
@@ -31,7 +33,9 @@ public class AdminUI implements MenuInterface {
             ConsultationService consultationService,
             AdministrateurService adminService,
             StatistiquesService statsService,
-            DataService dataService) {
+            DataService dataService,
+            CSVDataImportService importService,
+            CSVExportService exportService) {
         this.sc = sc;
         this.admin = admin;
         this.patientService = patientService;
@@ -39,6 +43,8 @@ public class AdminUI implements MenuInterface {
         this.adminService = adminService;
         this.statsService = statsService;
         this.dataService = dataService;
+        this.importService = importService;
+        this.exportService = exportService;
     }
 
     @Override
@@ -51,6 +57,8 @@ public class AdminUI implements MenuInterface {
             System.out.println("║ 1) Gestion des utilisateurs       ║");
             System.out.println("║ 2) Statistiques du système        ║");
             System.out.println("║ 3) Sauvegarder les données        ║");
+            System.out.println("║ 4) Importer des données           ║");
+            System.out.println("║ 5) Exporter des données           ║");
             System.out.println("║ 0) Se déconnecter                 ║");
             System.out.println("╚═══════════════════════════════════╝");
             System.out.print("Votre choix: ");
@@ -63,6 +71,10 @@ public class AdminUI implements MenuInterface {
                     afficherStatistiques();
                 case "3" ->
                     sauvegarderDonnees();
+                case "4" ->
+                    menuImporterDonnees();
+                case "5" ->
+                    menuExporterDonnees();
                 case "0" ->
                     continuer = false;
                 default ->
@@ -328,6 +340,55 @@ public class AdminUI implements MenuInterface {
         dataService.saveConsultations(consultationService.getConsultations());
         dataService.saveAntecedents(patientService.getPatients());
         System.out.println("(Données sauvegardées)");
+    }
+
+    private void menuImporterDonnees() {
+        boolean continuer = true;
+        while (continuer) {
+            System.out.println("\n╔════════════════════════════════════╗");
+            System.out.println("║  IMPORTATION DE DONNÉES            ║");
+            System.out.println("╠════════════════════════════════════╣");
+            System.out.println("║ 1) Importer Patients (CSV)         ║");
+            System.out.println("║ 2) Importer Professionnels (CSV)   ║");
+            System.out.println("║ 3) Importer Consultations (CSV)    ║");
+            System.out.println("║ 0) Retour                          ║");
+            System.out.println("╚════════════════════════════════════╝");
+            System.out.print("Votre choix: ");
+            String choix = sc.nextLine().trim();
+
+            try {
+                switch (choix) {
+                    case "1" -> {
+                        String path = lireChaine("Chemin du fichier CSV Patients: ");
+                        importService.importPatientsData(path);
+                    }
+                    case "2" -> {
+                        String path = lireChaine("Chemin du fichier CSV Professionnels: ");
+                        importService.importProfessionnelsData(path);
+                    }
+                    case "3" -> {
+                        String path = lireChaine("Chemin du fichier CSV Consultations: ");
+                        importService.importConsultationsData(path);
+                    }
+                    case "0" -> continuer = false;
+                    default -> System.out.println("❌ Choix invalide");
+                }
+            } catch (Exception e) {
+                System.out.println("❌ Erreur lors de l'importation: " + e.getMessage());
+            }
+        }
+    }
+
+    private void menuExporterDonnees() {
+        System.out.println("\n--- Exportation des données ---");
+        System.out.println("Cela va générer des fichiers CSV dans le dossier 'exportedFiles/'.");
+        String confirmation = lireChaine("Confirmer l'exportation ? (O/N): ");
+        
+        if (confirmation.equalsIgnoreCase("O")) {
+            exportService.exportAllData();
+        } else {
+            System.out.println("Exportation annulée.");
+        }
     }
 
     /* ===================== UTILITAIRES ===================== */
