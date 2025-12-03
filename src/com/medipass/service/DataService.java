@@ -252,7 +252,7 @@ public class DataService {
                 Patient patient = allPatients.stream().filter(p -> p.getId() == patientId).findFirst().orElse(null);
 
                 if (pro != null && patient != null) {
-                    LocalDateTime date = LocalDateTime.parse(row.getString("dateHeure"));
+                    LocalDateTime date = row.getDateTime("dateHeure");
                     String motif = row.getString("motif");
                     Consultation newConsultation;
                     if (idConsultation > 0) {
@@ -398,7 +398,7 @@ public class DataService {
             for (Row row : table) {
                 try {
                     int idConsultation = row.columnNames().contains("idConsultation") ? row.getInt("idConsultation") : 0;
-                    LocalDateTime date = LocalDateTime.parse(row.getString("dateHeure"));
+                    LocalDateTime date = row.getDateTime("dateHeure");
                     String motif = row.getString("motif");
                     String proLogin = row.getString("professionnelLogin");
                     int patientId = row.getInt("patientId");
