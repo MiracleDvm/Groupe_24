@@ -343,6 +343,7 @@ public class DataService {
                 try {
                     String login = row.getString("login");
                     String password = row.getString("password");
+                    String accessLevel = row.getString("accessLevels");
                     String nom = row.getString("nom");
                     String prenom = row.getString("prenom");
                     String specialite = row.getString("specialite");
