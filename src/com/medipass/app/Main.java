@@ -160,7 +160,6 @@ public class Main {
         System.out.print(prompt);
         return sc.nextLine().trim();
     }
-
     private static int lireEntier(String prompt) {
         while (true) {
             try {

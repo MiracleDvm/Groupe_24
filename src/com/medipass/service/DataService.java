@@ -221,7 +221,7 @@ public class DataService {
                     if (row.columnNames().contains("accessLevels")) {
                         accessLevels = row.getString("accessLevels");
                     }
-                    ProfessionnelSante newPro = new ProfessionnelSante(login, password, "PRO", accessLevels, nom, prenom, specialite, numeroOrdre);
+                    ProfessionnelSante newPro = new ProfessionnelSante(login, password, "PRO", accessLevels, "ALL", nom, prenom, specialite, numeroOrdre);
                     if (row.columnNames().contains("horairesDisponibilite")) {
                         String horaires = row.getString("horairesDisponibilite");
                         if (horaires != null) newPro.setHorairesDisponibilite(horaires);
@@ -359,7 +359,7 @@ public class DataService {
                     String accessLevels = "STANDARD";
                     if (row.columnNames().contains("accessLevels")) accessLevels = row.getString("accessLevels");
                     
-                    ProfessionnelSante p = new ProfessionnelSante(login, password, "PRO", accessLevels, nom, prenom, specialite, numeroOrdre);
+                    ProfessionnelSante p = new ProfessionnelSante(login, password, "PRO", accessLevels, "ALL", nom, prenom, specialite, numeroOrdre);
                     if (row.columnNames().contains("horairesDisponibilite")) p.setHorairesDisponibilite(row.getString("horairesDisponibilite"));
                     pros.add(p);
                 } catch (Exception e) { System.err.println("Erreur parsing professionnel: " + e.getMessage()); }

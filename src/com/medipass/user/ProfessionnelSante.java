@@ -17,24 +17,29 @@ public class ProfessionnelSante extends Utilisateur {
     private final String specialite;
     private final String numeroOrdre;
     private String accessLevels;
+    private String patientsAccessLevels;
     private final List<Consultation> planning = new ArrayList<>();
     private String horairesDisponibilite; // ex: "9h-12h, 14h-18h"
 
-    public ProfessionnelSante(String loginID, String mdp, String role, String accessLevels, String specialite,
+    public ProfessionnelSante(String loginID, String mdp, String role, String accessLevels, String patientsAccessLevels,
+            String specialite,
             String numeroOrdre) {
         super(loginID, mdp, role);
         this.specialite = specialite;
         this.numeroOrdre = numeroOrdre;
         this.accessLevels = accessLevels;
+        this.patientsAccessLevels = patientsAccessLevels;
         this.horairesDisponibilite = "9h-17h"; // Par défaut
     }
 
-    public ProfessionnelSante(String loginID, String mdp, String role, String accessLevels, String nom, String prenom, String specialite,
+    public ProfessionnelSante(String loginID, String mdp, String role, String accessLevels, String patientsAccessLevels,
+            String nom, String prenom, String specialite,
             String numeroOrdre) {
         super(loginID, mdp, role, nom, prenom);
         this.specialite = specialite;
         this.numeroOrdre = numeroOrdre;
         this.accessLevels = accessLevels;
+        this.patientsAccessLevels = patientsAccessLevels;
         this.horairesDisponibilite = "9h-17h";
     }
 
@@ -46,14 +51,14 @@ public class ProfessionnelSante extends Utilisateur {
     /**
      * Ajoute une consultation au planning
      */
-    public void ajouterConsultation(Consultation c){
+    public void ajouterConsultation(Consultation c) {
         planning.add(c);
     }
 
     /**
      * Annule une consultation (marque comme annulée au lieu de supprimer)
      */
-    public boolean annulerConsultation(int idConsultation){
+    public boolean annulerConsultation(int idConsultation) {
         for (Consultation c : planning) {
             if (c.getIdConsultation() == idConsultation) {
                 c.setStatut("annulée");
@@ -66,14 +71,14 @@ public class ProfessionnelSante extends Utilisateur {
     /**
      * Récupère le planning complet
      */
-    public List<Consultation> getPlanning(){ 
-        return planning; 
+    public List<Consultation> getPlanning() {
+        return planning;
     }
 
     /**
      * Récupère le nombre de consultations
      */
-    public int getNombreConsultations(){
+    public int getNombreConsultations() {
         return planning.size();
     }
 
@@ -81,8 +86,16 @@ public class ProfessionnelSante extends Utilisateur {
         return accessLevels;
     }
 
+    public String getPatientsAccessLevels() {
+        return patientsAccessLevels;
+    }
+
     public void setAccessLevels(String levels) {
         accessLevels = levels;
+    }
+
+    public void setPatientsAccessLevels(String levels) {
+        patientsAccessLevels = levels;
     }
 
     public List<Consultation> getConsultationsEffectuees() {
@@ -98,7 +111,7 @@ public class ProfessionnelSante extends Utilisateur {
     /**
      * Vérification de disponibilité avec gestion des chevauchements
      */
-    public boolean estDisponiblePour(Consultation nouvelleConsultation){
+    public boolean estDisponiblePour(Consultation nouvelleConsultation) {
         LocalDateTime debut1 = nouvelleConsultation.getDateHeure();
         LocalDateTime fin1 = nouvelleConsultation.getFinConsultation();
 
